@@ -1,0 +1,6 @@
+@Netrin_HostAddress = http://localhost:5055
+
+GET {{Netrin_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
