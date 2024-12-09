@@ -40,14 +40,36 @@ namespace Netrin.Application.Services
             }
             catch (Exception ex)
             {
-                //throw new CustomExceptions.InternalServerErrorException(ex.Message);
+                Log.Error($"Erro ao retornar pessoas: {ex.Message}");
                 return new ResponseBase<IEnumerable<ListarPessoaDto>>(sucesso: false, mensagem: "Erro interno.", dados: null);
             }
         }
 
-        public Task<ResponseBase<ListarPessoaDto>> RetornarPessoaIdAsync(Guid id)
+        public async Task<ResponseBase<ListarPessoaDto>> RetornarPessoaIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                // Busca o dado no repositório:
+                var pessoaIdResponse = await _pessoaRepository.RetornarPessoaIdRespositorioAsync(id); 
+
+                // Verifica se a operação foi bem-sucedida e se há dados:
+                if (!pessoaIdResponse.Sucesso || pessoaIdResponse.Dados is null)
+                {
+                    Log.Warning($"Pessoa com id: '{id}' nao encontrada na base de dados.");
+                    return new ResponseBase<ListarPessoaDto>(sucesso: false, mensagem: $"Pessoa com id: '{id}' nao encontrada na base de dados.", dados: null);
+                }
+
+                // Mapeia os dados para o Dto:
+                var pessoaId = _mapper.Map<ListarPessoaDto>(pessoaIdResponse.Dados);
+
+                Log.Information($"Pessoa com id: '{id}' retornada com sucesso.");
+                return new ResponseBase<ListarPessoaDto>(sucesso: true, mensagem: "Pessoa retornada com sucesso.", dados: pessoaId);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Erro ao retornar pessoa com id: '{id}': {ex.Message}");
+                return new ResponseBase<ListarPessoaDto>(sucesso: false, mensagem: "Erro interno.", dados: null);
+            }
         }
 
         public Task<ResponseBase<ListarPessoaDto>> AdicionarPesssoaAsync(CriarPessoaDto criarPessoaDto)

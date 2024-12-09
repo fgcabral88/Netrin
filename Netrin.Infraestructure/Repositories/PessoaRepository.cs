@@ -53,9 +53,38 @@ namespace Netrin.Infraestructure.Repositories
             }
         }
 
-        public Task<ResponseBase<ListarPessoaDto>> RetornarPessoaIdRespositorioAsync(Guid id)
+        public async Task<ResponseBase<ListarPessoaDto>> RetornarPessoaIdRespositorioAsync(Guid id)
         {
-            throw new NotImplementedException();
+            // Consulta a Pessoa pelo Id:
+            const string query = "SELECT * FROM Pessoa WHERE Id = @Id";
+
+            try
+            {
+                // Abre a conexão com o banco de dados:
+                using var conexao = _dbContext.CriarConexao(); 
+                conexao.Open();
+
+                // Recupera a Pessoa no banco de dados:
+                var pessoaId = await conexao.QueryFirstOrDefaultAsync<ListarPessoaDto>(query, new { Id = id });
+
+                // Valida se a Pessoa foi encontrada:
+                if (pessoaId is null)
+                {
+                    return new ResponseBase<ListarPessoaDto>(sucesso: false, mensagem: $"Pessoa com id {id} não encontrada no banco de dados.", dados: null);
+                }
+
+                return new ResponseBase<ListarPessoaDto>(sucesso: true, mensagem: "Pessoa recuperada com sucesso.", dados: pessoaId);
+            }
+            catch (SqlException ex)
+            {
+                Log.Error(ex.Message, ex);
+                return new ResponseBase<ListarPessoaDto>(sucesso: false, mensagem: ex.Message, dados: null);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message, ex);
+                return new ResponseBase<ListarPessoaDto>(sucesso: false, mensagem: ex.Message, dados: null);
+            }
         }
 
         public Task<ResponseBase<ListarPessoaDto>> AdicionarPesssoaRepositorioAsync(CriarPessoaDto criarPessoaDto)
