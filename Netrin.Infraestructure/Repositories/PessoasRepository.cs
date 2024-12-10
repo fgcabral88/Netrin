@@ -149,9 +149,50 @@ namespace Netrin.Infraestructure.Repositories
             }
         }
 
-        public Task<ResponseBase<ListarPessoasDto>> EditarPessoaRepositorioAsync(EditarPessoasDto editarPessoaDto)
+        public async Task<ResponseBase<ListarPessoasDto>> EditarPessoaRepositorioAsync(EditarPessoasDto editarPessoaDto)
         {
-            throw new NotImplementedException();
+            try
+            {
+                // Query para atualizar Pessoa:
+                const string query = @"UPDATE Pessoas SET Nome = @Nome, Sobrenome = @Sobrenome, DataNascimento = @DataNascimento, Email = @Email, Sexo = @Sexo, Telefone = @Telefone, 
+                     Cpf = @Cpf, Cidade = @Cidade, Estado = @Estado, DataCadastro = @DataCadastro, DataAtualizacao = @DataAtualizacao, Ativo = @Ativo WHERE Id = @Id; SELECT * FROM Pessoas 
+                     WHERE Id = @Id;";
+
+                // Abre conexão com o banco de dados:
+                using var conexao = _dbContext.CriarConexao(); 
+                conexao.Open();
+
+                // Inicia uma transação:
+                using var transacao = conexao.BeginTransaction();
+
+                // Executa a query de atualização e retorna a Pessoa editada:
+                var pessoaEditada = await conexao.QueryAsync<ListarPessoasDto>(query, editarPessoaDto, transaction: transacao);
+
+                // Verifica se a Pessoa foi encontrada:
+                if (!pessoaEditada.Any())
+                {
+                    transacao.Rollback();
+
+                    Log.Warning("Nenhuma Pessoa foi editada.");
+                    return new ResponseBase<ListarPessoasDto>(sucesso: false, mensagem: "Nenhuma Pessoa foi editada.", dados: null);
+                }
+
+                // Confirma a transação
+                transacao.Commit();
+
+                Log.Information("Pessoa editada com sucesso.");
+                return new ResponseBase<ListarPessoasDto>(sucesso: true, mensagem: "Pessoa editada com sucesso.", dados: pessoaEditada.FirstOrDefault());
+            }
+            catch (SqlException ex)
+            {
+                Log.Error(ex.Message, ex);
+                return new ResponseBase<ListarPessoasDto>(sucesso: false, mensagem: ex.Message, dados: null);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message, ex);
+                return new ResponseBase<ListarPessoasDto>(sucesso: false, mensagem: ex.Message, dados: null);
+            }
         }
 
         public Task<ResponseBase<ListarPessoasDto>> DeletarPessoaRepositorioAsync(Guid Id)

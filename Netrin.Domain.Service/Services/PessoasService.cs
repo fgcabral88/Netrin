@@ -40,7 +40,7 @@ namespace Netrin.Application.Services
             }
             catch (Exception ex)
             {
-                Log.Error($"Erro ao retornar pessoas: {ex.Message}");
+                Log.Error($"Erro ao retornar pessoas: {ex.Message}", ex);
                 return new ResponseBase<IEnumerable<ListarPessoasDto>>(sucesso: false, mensagem: "Erro interno.", dados: null);
             }
         }
@@ -67,7 +67,7 @@ namespace Netrin.Application.Services
             }
             catch (Exception ex)
             {
-                Log.Error($"Erro ao retornar pessoa com id: '{id}': {ex.Message}");
+                Log.Error($"Erro ao retornar pessoa com id: '{id}': {ex.Message}", ex);
                 return new ResponseBase<ListarPessoasDto>(sucesso: false, mensagem: "Erro interno.", dados: null);
             }
         }
@@ -101,14 +101,43 @@ namespace Netrin.Application.Services
             }
             catch (Exception ex)
             {
-                Log.Error($"Erro ao adicionar pessoa: {ex.Message}");
+                Log.Error($"Erro ao adicionar pessoa: {ex.Message}", ex);
                 return new ResponseBase<ListarPessoasDto>(sucesso: false, mensagem: "Erro ao adicionar Pessoa.", dados: null);
             }
         }
 
-        public Task<ResponseBase<ListarPessoasDto>> EditarPessoaAsync(EditarPessoasDto editarPessoaDto)
+        public async Task<ResponseBase<ListarPessoasDto>> EditarPessoaAsync(EditarPessoasDto editarPessoaDto)
         {
-            throw new NotImplementedException();
+            try
+            {
+                // Chamada ao repositório para editar Pessoa:
+                var pessoaEditarResponse = await _pessoaRepository.EditarPessoaRepositorioAsync(editarPessoaDto);
+
+                // Verifica o retorno do repositório:
+                if (!pessoaEditarResponse.Sucesso)
+                {
+                    Log.Warning("Não foi possível editar Pessoa.");
+                    return new ResponseBase<ListarPessoasDto>(sucesso: false, mensagem: "Não foi possível editar Pessoa.", dados: null);
+                }
+
+                // Recupera a Pessoa editada:
+                var pessoasEditadas = pessoaEditarResponse.Dados;
+
+                // Verifica se a Pessoa foi editada:
+                if (pessoasEditadas is null)
+                {
+                    Log.Warning("Falha ao recuperar a cerveja recém-editada.");
+                    return new ResponseBase<ListarPessoasDto>(sucesso: false, mensagem: "Falha ao recuperar a Pessoa recém-editada.", dados: null);
+                }
+
+                Log.Information("Pessoa editada com sucesso.");
+                return new ResponseBase<ListarPessoasDto>(sucesso: true, mensagem: "Pessoa editada com sucesso.", dados: pessoasEditadas);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Erro ao editar a pessoa: {ex.Message}", ex);
+                return new ResponseBase<ListarPessoasDto>(sucesso: false, mensagem: "Erro ao editar a pessoa.", dados: null);
+            }
         }
 
         public Task<ResponseBase<ListarPessoasDto>> DeletarPessoaAsync(Guid Id)
