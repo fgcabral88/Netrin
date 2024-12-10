@@ -22,4 +22,9 @@
     <ProjectReference Include="..\Netrin.Infraestructure\Netrin.Infraestructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Presentation\Filters\" />
+    <Folder Include="Presentation\Middlewares\" />
+  </ItemGroup>
+
 </Project>

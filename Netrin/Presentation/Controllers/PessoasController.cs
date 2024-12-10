@@ -3,14 +3,14 @@ using Netrin.Application.Dtos.Pessoa;
 using Netrin.Domain.Service.Interfaces.Services;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace Netrin.Api.Controllers
+namespace Netrin.Api.Presentation.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PessoaController : ControllerBase
+    public class PessoasController : ControllerBase
     {
         private readonly IPessoasService _pessoaService;
-        public PessoaController(IPessoasService pessoaService)
+        public PessoasController(IPessoasService pessoaService)
         {
             _pessoaService = pessoaService;
         }
@@ -29,9 +29,9 @@ namespace Netrin.Api.Controllers
         {
             var pessoasResponse = await _pessoaService.RetornarPessoaAsync();
 
-            if(!pessoasResponse.Sucesso)
+            if (!pessoasResponse.Sucesso)
             {
-                if(pessoasResponse.Dados is null)
+                if (pessoasResponse.Dados is null)
                     return NotFound(pessoasResponse.Mensagem);
 
                 return BadRequest(pessoasResponse.Mensagem);
@@ -53,7 +53,7 @@ namespace Netrin.Api.Controllers
         [SwaggerResponse(500, "Erro interno ao processar a solicitação.")]
         public async Task<IActionResult> RetornarPessoasId(Guid id)
         {
-            if(id == Guid.Empty)
+            if (id == Guid.Empty)
                 return BadRequest("Id informado é inválido.");
 
             var pessoaIdresponse = await _pessoaService.RetornarPessoaIdAsync(id);
