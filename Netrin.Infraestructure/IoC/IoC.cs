@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Netrin.Application.Behaviors.Validations;
 using Netrin.Application.Mappings;
@@ -7,6 +8,7 @@ using Netrin.Application.Services;
 using Netrin.Domain.Service.Interfaces.Respository;
 using Netrin.Domain.Service.Interfaces.Services;
 using Netrin.Infraestructure.Repositories;
+using Serilog;
 
 namespace Netrin.Infraestructure.IoC
 {

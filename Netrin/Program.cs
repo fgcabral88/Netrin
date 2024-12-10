@@ -1,6 +1,7 @@
 using Microsoft.OpenApi.Models;
 using Netrin.Infraestructure.Data.Context;
 using Netrin.Infraestructure.IoC;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,7 +27,19 @@ builder.Services.AdicionarDependencias();
 
 // Adiciona a string de conexão ao contêiner de serviços
 builder.Services.AddScoped<SqlDbContext>(sp =>
-    new SqlDbContext(builder.Configuration.GetConnectionString("DefaultConnection")!));
+    new SqlDbContext(builder.Configuration.GetConnectionString("SqlServer")!));
+
+// Serilog
+builder.Host.UseSerilog();
+
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration) // Lê as configurações do appsettings.json
+    .Enrich.FromLogContext() // Adiciona informações de contexto
+    .WriteTo.Console() // Exibe no console
+    .WriteTo.MongoDB(
+        databaseUrl: builder.Configuration.GetConnectionString("MongoDB")!,
+        collectionName: "Logs") // Salva no MongoDB
+    .CreateLogger();
 
 var app = builder.Build();
 
