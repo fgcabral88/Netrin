@@ -3,46 +3,54 @@ using System.Text.Json.Serialization;
 
 namespace Netrin.Application.Dtos.Pessoa
 {
-    public class ListarPessoaDto : BaseDto
+    public class ListarPessoasDto : BaseDto
     {
         [JsonPropertyOrder(2)]
         [JsonPropertyName("Nome")]
-        public string Nome { get; set; }
+        public required string Nome { get; set; }
 
         [JsonPropertyOrder(3)]
         [JsonPropertyName("Sobrenome")]
-        public string Sobrenome { get; set; }
+        public required string Sobrenome { get; set; }
 
         [JsonPropertyOrder(4)]
         [JsonPropertyName("Data de Nascimento")]
-        public DateTime DataNascimento { get; set; }
+        public required DateTime DataNascimento { get; set; }
         
         [JsonPropertyOrder(5)]
         [JsonPropertyName("E-mail")]
-        public string Email { get; set; }
+        public required string Email { get; set; }
         
         [JsonPropertyOrder(6)]
         [JsonPropertyName("Sexo")]
-        public SexoEnum Sexo { get; set; }
+        public required SexoEnum Sexo { get; set; }
 
         [JsonPropertyOrder(7)]
         [JsonPropertyName("Telefone")]
-        public string Telefone { get; set; }
+        public required string Telefone { get; set; }
 
         [JsonPropertyOrder(8)]
         [JsonPropertyName("CPF")]
-        public string Cpf { get; set; }
+        public required string Cpf { get; set; }
 
         [JsonPropertyOrder(9)]
         [JsonPropertyName("Cidade")]
-        public string Cidade { get; set; }
+        public required string Cidade { get; set; }
         
         [JsonPropertyOrder(10)]
         [JsonPropertyName("Estado")]
-        public string Estado { get; set; }
+        public required string Estado { get; set; }
 
         [JsonPropertyOrder(11)]
+        [JsonPropertyName("Data Cadastro")]
+        public required DateTime DataCadastro { get; set; }
+
+        [JsonPropertyOrder(12)]
+        [JsonPropertyName("Data Atualizacao")]
+        public required DateTime DataAtualizacao { get; set; }
+
+        [JsonPropertyOrder(13)]
         [JsonPropertyName("Status")]
-        public AtivoEnum Ativo { get; set; }
+        public required AtivoEnum Ativo { get; set; }
     }
 }

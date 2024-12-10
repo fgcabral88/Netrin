@@ -19,6 +19,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Netrin.Domain.Service\Netrin.Domain.Service.csproj" />
+    <ProjectReference Include="..\Netrin.Infraestructure\Netrin.Infraestructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Presentation\Filters\" />
+    <Folder Include="Presentation\Middlewares\" />
   </ItemGroup>
 
 </Project>
