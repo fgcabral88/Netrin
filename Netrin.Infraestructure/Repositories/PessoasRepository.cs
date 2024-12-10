@@ -148,6 +148,7 @@ namespace Netrin.Infraestructure.Repositories
                 return new ResponseBase<ListarPessoasDto>(sucesso: false, mensagem: ex.Message, dados: null);
             }
         }
+
         public Task<ResponseBase<ListarPessoasDto>> EditarPessoaRepositorioAsync(EditarPessoasDto editarPessoaDto)
         {
             throw new NotImplementedException();
