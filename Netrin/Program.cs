@@ -50,6 +50,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1"));
 }
 
+app.UseMiddleware<RateLimitingMiddleware>(3, TimeSpan.FromMinutes(1)); 
+
 app.UseReDoc(options =>
 {
     options.DocumentTitle = "Netrin - Redoc";

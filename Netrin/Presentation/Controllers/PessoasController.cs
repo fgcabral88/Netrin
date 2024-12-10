@@ -6,6 +6,7 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace Netrin.Api.Presentation.Controllers
 {
     [Route("api/[controller]")]
+    [Produces("application/json")]
     [ApiController]
     public class PessoasController : ControllerBase
     {
@@ -21,10 +22,11 @@ namespace Netrin.Api.Presentation.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("RetornarPessoas")]
-        [SwaggerOperation(Summary = "Retornar todas as Pessoas.", Description = "Retorna uma lista com todas as Pessoas disponíveis no sistema.")]
-        [SwaggerResponse(200, "Lista de Pessoas retornada com sucesso.", typeof(IEnumerable<ListarPessoasDto>))]
-        [SwaggerResponse(404, "Nenhuma Pessoa encontrada.")]
-        [SwaggerResponse(500, "Erro interno ao processar a solicitação.")]
+        [SwaggerOperation(Summary = "Retornar todas as Pessoas", Description = "Retorna uma lista com todas as Pessoas disponíveis no sistema")]
+        [SwaggerResponse(200, "Lista de Pessoas retornada com sucesso", typeof(IEnumerable<ListarPessoasDto>))]
+        [SwaggerResponse(404, "Nenhuma Pessoa encontrada")]
+        [SwaggerResponse(429, "Limite de solicitações atingido")]
+        [SwaggerResponse(500, "Erro interno ao processar a solicitação")]
         public async Task<IActionResult> RetornarPessoas()
         {
             var pessoasResponse = await _pessoaService.RetornarPessoaAsync();
@@ -47,10 +49,11 @@ namespace Netrin.Api.Presentation.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("RetornarPessoasId/{id}")]
-        [SwaggerOperation(Summary = "Retornar uma Pessoa pelo Id.", Description = "Retorna uma Pessoa pelo Id informado.")]
-        [SwaggerResponse(200, "Pessoa retornada com sucesso.", typeof(ListarPessoasDto))]
-        [SwaggerResponse(404, "Nenhuma Pessoa encontrada.")]
-        [SwaggerResponse(500, "Erro interno ao processar a solicitação.")]
+        [SwaggerOperation(Summary = "Retornar uma Pessoa pelo Id", Description = "Retorna uma Pessoa pelo Id informado")]
+        [SwaggerResponse(200, "Pessoa retornada com sucesso", typeof(ListarPessoasDto))]
+        [SwaggerResponse(404, "Nenhuma Pessoa encontrada")]
+        [SwaggerResponse(429, "Limite de solicitações atingidos")]
+        [SwaggerResponse(500, "Erro interno ao processar a solicitação")]
         public async Task<IActionResult> RetornarPessoasId(Guid id)
         {
             if (id == Guid.Empty)

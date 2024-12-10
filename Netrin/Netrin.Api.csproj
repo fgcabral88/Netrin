@@ -24,7 +24,6 @@
 
   <ItemGroup>
     <Folder Include="Presentation\Filters\" />
-    <Folder Include="Presentation\Middlewares\" />
   </ItemGroup>
 
 </Project>
