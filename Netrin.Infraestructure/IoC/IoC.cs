@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using FluentValidation;
+using FluentValidation.AspNetCore;
+using Microsoft.Extensions.DependencyInjection;
+using Netrin.Application.Behaviors.Validations;
 using Netrin.Application.Mappings;
 using Netrin.Application.Services;
 using Netrin.Domain.Service.Interfaces.Respository;
@@ -21,6 +24,11 @@ namespace Netrin.Infraestructure.IoC
 
             // AutoMapper
             services.AddAutoMapper(typeof(PessoasProfile));
+
+            // FluentValidation
+            services.AddFluentValidationAutoValidation();
+            services.AddFluentValidationClientsideAdapters();
+            services.AddValidatorsFromAssemblyContaining<CriarPessoasDtoValidation>();
 
             #endregion
 
