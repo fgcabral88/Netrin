@@ -7,18 +7,18 @@ using Serilog;
 
 namespace Netrin.Application.Services
 {
-    public class PessoaService : IPessoaService
+    public class PessoasService : IPessoasService
     {
         private readonly IMapper _mapper;
-        private readonly IPessoaRepository _pessoaRepository;
+        private readonly IPessoasRepository _pessoaRepository;
 
-        public PessoaService(IMapper mapper, IPessoaRepository pessoaRepository)
+        public PessoasService(IMapper mapper, IPessoasRepository pessoaRepository)
         {
             _mapper = mapper;
             _pessoaRepository = pessoaRepository;
         }
 
-        public async Task<ResponseBase<IEnumerable<ListarPessoaDto>>> RetornarPessoaAsync()
+        public async Task<ResponseBase<IEnumerable<ListarPessoasDto>>> RetornarPessoaAsync()
         {
             try
             {
@@ -29,23 +29,23 @@ namespace Netrin.Application.Services
                 if (!pessoasResponse.Sucesso || pessoasResponse.Dados is null || !pessoasResponse.Dados.Any())
                 {
                     Log.Warning("Nao foram encontradas pessoas cadastradas no banco de dados.");
-                    return new ResponseBase<IEnumerable<ListarPessoaDto>>(sucesso: false, mensagem: "Não foram encontradas pessoas cadastradas no banco de dados.", dados: null);
+                    return new ResponseBase<IEnumerable<ListarPessoasDto>>(sucesso: false, mensagem: "Não foram encontradas pessoas cadastradas no banco de dados.", dados: null);
                 }
 
                 // Mapeia os dados para o Dto:
-                var pessoas = _mapper.Map<List<ListarPessoaDto>>(pessoasResponse.Dados);
+                var pessoas = _mapper.Map<List<ListarPessoasDto>>(pessoasResponse.Dados);
 
                 Log.Information($"Pessoas retornadas com sucesso. Total: {pessoas.Count}");
-                return new ResponseBase<IEnumerable<ListarPessoaDto>>(sucesso: true, mensagem: "Pessoas retornadas com sucesso.", dados: pessoas);
+                return new ResponseBase<IEnumerable<ListarPessoasDto>>(sucesso: true, mensagem: "Pessoas retornadas com sucesso.", dados: pessoas);
             }
             catch (Exception ex)
             {
                 Log.Error($"Erro ao retornar pessoas: {ex.Message}");
-                return new ResponseBase<IEnumerable<ListarPessoaDto>>(sucesso: false, mensagem: "Erro interno.", dados: null);
+                return new ResponseBase<IEnumerable<ListarPessoasDto>>(sucesso: false, mensagem: "Erro interno.", dados: null);
             }
         }
 
-        public async Task<ResponseBase<ListarPessoaDto>> RetornarPessoaIdAsync(Guid id)
+        public async Task<ResponseBase<ListarPessoasDto>> RetornarPessoaIdAsync(Guid id)
         {
             try
             {
@@ -56,33 +56,33 @@ namespace Netrin.Application.Services
                 if (!pessoaIdResponse.Sucesso || pessoaIdResponse.Dados is null)
                 {
                     Log.Warning($"Pessoa com id: '{id}' nao encontrada na base de dados.");
-                    return new ResponseBase<ListarPessoaDto>(sucesso: false, mensagem: $"Pessoa com id: '{id}' nao encontrada na base de dados.", dados: null);
+                    return new ResponseBase<ListarPessoasDto>(sucesso: false, mensagem: $"Pessoa com id: '{id}' não encontrada na base de dados.", dados: null);
                 }
 
                 // Mapeia os dados para o Dto:
-                var pessoaId = _mapper.Map<ListarPessoaDto>(pessoaIdResponse.Dados);
+                var pessoaId = _mapper.Map<ListarPessoasDto>(pessoaIdResponse.Dados);
 
                 Log.Information($"Pessoa com id: '{id}' retornada com sucesso.");
-                return new ResponseBase<ListarPessoaDto>(sucesso: true, mensagem: "Pessoa retornada com sucesso.", dados: pessoaId);
+                return new ResponseBase<ListarPessoasDto>(sucesso: true, mensagem: "Pessoa retornada com sucesso.", dados: pessoaId);
             }
             catch (Exception ex)
             {
                 Log.Error($"Erro ao retornar pessoa com id: '{id}': {ex.Message}");
-                return new ResponseBase<ListarPessoaDto>(sucesso: false, mensagem: "Erro interno.", dados: null);
+                return new ResponseBase<ListarPessoasDto>(sucesso: false, mensagem: "Erro interno.", dados: null);
             }
         }
 
-        public Task<ResponseBase<ListarPessoaDto>> AdicionarPesssoaAsync(CriarPessoaDto criarPessoaDto)
+        public Task<ResponseBase<ListarPessoasDto>> AdicionarPesssoaAsync(CriarPessoasDto criarPessoaDto)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ResponseBase<ListarPessoaDto>> EditarPessoaAsync(EditarPessoaDto editarPessoaDto)
+        public Task<ResponseBase<ListarPessoasDto>> EditarPessoaAsync(EditarPessoasDto editarPessoaDto)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ResponseBase<ListarPessoaDto>> DeletarPessoaAsync(Guid Id)
+        public Task<ResponseBase<ListarPessoasDto>> DeletarPessoaAsync(Guid Id)
         {
             throw new NotImplementedException();
         }

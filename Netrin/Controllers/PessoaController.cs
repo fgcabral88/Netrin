@@ -9,8 +9,8 @@ namespace Netrin.Api.Controllers
     [ApiController]
     public class PessoaController : ControllerBase
     {
-        private readonly IPessoaService _pessoaService;
-        public PessoaController(IPessoaService pessoaService)
+        private readonly IPessoasService _pessoaService;
+        public PessoaController(IPessoasService pessoaService)
         {
             _pessoaService = pessoaService;
         }
@@ -22,7 +22,7 @@ namespace Netrin.Api.Controllers
         [HttpGet]
         [Route("RetornarPessoas")]
         [SwaggerOperation(Summary = "Retornar todas as Pessoas.", Description = "Retorna uma lista com todas as Pessoas disponíveis no sistema.")]
-        [SwaggerResponse(200, "Lista de Pessoas retornada com sucesso.", typeof(IEnumerable<ListarPessoaDto>))]
+        [SwaggerResponse(200, "Lista de Pessoas retornada com sucesso.", typeof(IEnumerable<ListarPessoasDto>))]
         [SwaggerResponse(404, "Nenhuma Pessoa encontrada.")]
         [SwaggerResponse(500, "Erro interno ao processar a solicitação.")]
         public async Task<IActionResult> RetornarPessoas()
@@ -46,12 +46,12 @@ namespace Netrin.Api.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("RetornarPessoaPorId")]
+        [Route("RetornarPessoasId/{id}")]
         [SwaggerOperation(Summary = "Retornar uma Pessoa pelo Id.", Description = "Retorna uma Pessoa pelo Id informado.")]
-        [SwaggerResponse(200, "Pessoa retornada com sucesso.", typeof(ListarPessoaDto))]
+        [SwaggerResponse(200, "Pessoa retornada com sucesso.", typeof(ListarPessoasDto))]
         [SwaggerResponse(404, "Nenhuma Pessoa encontrada.")]
         [SwaggerResponse(500, "Erro interno ao processar a solicitação.")]
-        public async Task<IActionResult> RetornarPessoaPorId(Guid id)
+        public async Task<IActionResult> RetornarPessoasId(Guid id)
         {
             if(id == Guid.Empty)
                 return BadRequest("Id informado é inválido.");

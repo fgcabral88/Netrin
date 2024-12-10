@@ -1,4 +1,6 @@
 using Microsoft.OpenApi.Models;
+using Netrin.Infraestructure.Data.Context;
+using Netrin.Infraestructure.IoC;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +20,13 @@ builder.Services.AddSwaggerGen(options =>
 
     options.EnableAnnotations();
 });
+
+// Registrar dependências IoC
+builder.Services.AdicionarDependencias();
+
+// Adiciona a string de conexão ao contêiner de serviços
+builder.Services.AddScoped<SqlDbContext>(sp =>
+    new SqlDbContext(builder.Configuration.GetConnectionString("DefaultConnection")!));
 
 var app = builder.Build();
 
