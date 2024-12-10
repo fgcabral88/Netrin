@@ -72,9 +72,38 @@ namespace Netrin.Application.Services
             }
         }
 
-        public Task<ResponseBase<ListarPessoasDto>> AdicionarPesssoaAsync(CriarPessoasDto criarPessoaDto)
+        public async Task<ResponseBase<ListarPessoasDto>> AdicionarPesssoaAsync(CriarPessoasDto criarPessoaDto)
         {
-            throw new NotImplementedException();
+            try
+            {
+                // Chamada ao repositório para adicionar Pessoa:
+                var pessoaAdicionarResponse = await _pessoaRepository.AdicionarPesssoaRepositorioAsync(criarPessoaDto);
+
+                // Verifica o retorno do repositório:
+                if (!pessoaAdicionarResponse.Sucesso)
+                {
+                    Log.Warning("Não foi possível adicionar Pessoa.");
+                    return new ResponseBase<ListarPessoasDto>(sucesso: false, mensagem: "Não foi possível adicionar Pessoa.", dados: null);
+                }
+
+                // Recupera a Pessoa adicionada:
+                var pessoaAdicionada = pessoaAdicionarResponse.Dados;
+
+                // Verifica se a Pessoa foi adicionada:
+                if (pessoaAdicionada is null)
+                {
+                    Log.Warning("Falha ao recuperar a Pessoa recém-cadastrada.");
+                    return new ResponseBase<ListarPessoasDto>(sucesso: false, mensagem: "Falha ao recuperar a Pessoa recém-cadastrada.", dados: null);
+                }
+
+                Log.Information("Pessoa adicionada com sucesso.");
+                return new ResponseBase<ListarPessoasDto>(sucesso: true, mensagem: "Pessoa adicionada com sucesso.", dados: pessoaAdicionada);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Erro ao adicionar pessoa: {ex.Message}");
+                return new ResponseBase<ListarPessoasDto>(sucesso: false, mensagem: "Erro ao adicionar Pessoa.", dados: null);
+            }
         }
 
         public Task<ResponseBase<ListarPessoasDto>> EditarPessoaAsync(EditarPessoasDto editarPessoaDto)
