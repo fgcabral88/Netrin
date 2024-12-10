@@ -140,9 +140,38 @@ namespace Netrin.Application.Services
             }
         }
 
-        public Task<ResponseBase<ListarPessoasDto>> DeletarPessoaAsync(Guid Id)
+        public async Task<ResponseBase<ListarPessoasDto>> DeletarPessoaAsync(Guid Id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                // Chamada ao repositório para deletar a Pessoa:
+                var pessoasDeletarResponse = await _pessoaRepository.DeletarPessoaRepositorioAsync(Id);
+
+                // Verifica o retorno do repositório:
+                if (!pessoasDeletarResponse.Sucesso)
+                {
+                    Log.Warning("Não foi possível deletar a Pessoa.");
+                    return new ResponseBase<ListarPessoasDto>(sucesso: false, mensagem: "Não foi possível deletar a Pessoa.", dados: null);
+                }
+
+                // Recupera a Pessoa deletada:
+                var pessoaDeletada = pessoasDeletarResponse.Dados; 
+
+                // Verifica se a Pessoa foi deletada:
+                if (pessoaDeletada is null)
+                {
+                    Log.Warning("Falha ao recuperar a Pessoa recém-deletada.");
+                    return new ResponseBase<ListarPessoasDto>(sucesso: false, mensagem: "Falha ao recuperar a Pessoa recém-deletada.", dados: null);
+                }
+
+                Log.Information("Pessoa deletada com sucesso.");
+                return new ResponseBase<ListarPessoasDto>(sucesso: true, mensagem: "Pessoa deletada com sucesso.", dados: pessoaDeletada);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Erro ao deletar a Pessoa: {ex.Message}", ex);
+                return new ResponseBase<ListarPessoasDto>(sucesso: false, mensagem: "Erro ao deletar a Pessoa.", dados: null);
+            }
         }
     }
 }
