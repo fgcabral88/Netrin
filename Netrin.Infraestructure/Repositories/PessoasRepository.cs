@@ -195,9 +195,64 @@ namespace Netrin.Infraestructure.Repositories
             }
         }
 
-        public Task<ResponseBase<ListarPessoasDto>> DeletarPessoaRepositorioAsync(Guid Id)
+        public async Task<ResponseBase<ListarPessoasDto>> DeletarPessoaRepositorioAsync(Guid Id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                // Query para recuperar os dados da Pessoa antes de deletar:
+                const string querySelect = @"SELECT Id, Nome, Sobrenome, DataNascimento, Email, Sexo, Telefone, Cpf, Cidade, Estado, DataCadastro, DataAtualizacao, Ativo 
+                       FROM Pessoas WHERE Id = @Id";
+
+                // Query para deletar a Pessoa:
+                const string queryDelete = "DELETE FROM Pessoas WHERE Id = @Id;";
+
+                // Abre uma conexão com o banco de dados:
+                using var conexao = _dbContext.CriarConexao();
+                conexao.Open();
+
+                // Inicia uma transação:
+                using var transacao = conexao.BeginTransaction();
+
+                // Recupera os dados da Pessoa:
+                var pessoaDelete = await conexao.QueryFirstOrDefaultAsync<ListarPessoasDto>(querySelect, new { Id = Id }, transaction: transacao);
+
+                // Verifica se a Pessoa foi encontrada:
+                if (pessoaDelete is null)
+                {
+                    transacao.Rollback();
+
+                    Log.Warning("Pessoa não encontrada no banco de dados.");
+                    return new ResponseBase<ListarPessoasDto>(sucesso: false, mensagem: "Pessoa não encontrada no banco de dados.", dados: null);
+                }
+
+                // Executa a query de exclusão:
+                var linhasAfetadas = await conexao.ExecuteAsync(queryDelete, new { Id = Id }, transaction: transacao);
+
+                // Valida se a exclusão foi realizada:
+                if (linhasAfetadas == 0)
+                {
+                    transacao.Rollback();
+
+                    Log.Warning("Nenhuma Pessoa foi deletada.");
+                    return new ResponseBase<ListarPessoasDto>(sucesso: false, mensagem: "Nenhuma Pessoa foi deletada.", dados: null);
+                }
+
+                // Confirma a transação:
+                transacao.Commit();
+
+                Log.Information("Pessoa deletada com sucesso.");
+                return new ResponseBase<ListarPessoasDto>(sucesso: true, mensagem: "Pessoa deletada com sucesso.", dados: pessoaDelete);
+            }
+            catch (SqlException ex)
+            {
+                Log.Error(ex.Message, ex);
+                return new ResponseBase<ListarPessoasDto>(sucesso: false, mensagem: ex.Message, dados: null);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message, ex);
+                 return new ResponseBase<ListarPessoasDto>(sucesso: false, mensagem: ex.Message, dados: null);
+            }
         }
 
         public void Dispose()

@@ -11,6 +11,7 @@ namespace Netrin.Api.Presentation.Controllers
     public class PessoasController : ControllerBase
     {
         private readonly IPessoasService _pessoaService;
+
         public PessoasController(IPessoasService pessoaService)
         {
             _pessoaService = pessoaService;
@@ -118,6 +119,34 @@ namespace Netrin.Api.Presentation.Controllers
                 return BadRequest(ModelState);
 
             var pessoaResponse = await _pessoaService.EditarPessoaAsync(editarPessoasDto);
+
+            if (!pessoaResponse.Sucesso)
+            {
+                if (pessoaResponse.Dados is null)
+                    return NotFound(pessoaResponse.Mensagem);
+            }
+
+            return Ok(pessoaResponse);
+        }
+
+        /// <summary>
+        /// Deleta uma Pessoa no sistema.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("DeletarPessoas")]
+        [SwaggerOperation(Summary = "Deletar uma Pessoa", Description = "Deletar uma Pessoa no sistema")]
+        [SwaggerResponse(200, "Pessoa retornada com sucesso", typeof(ListarPessoasDto))]
+        [SwaggerResponse(404, "Nenhuma Pessoa encontrada")]
+        [SwaggerResponse(429, "Limite de solicitações atingidos")]
+        [SwaggerResponse(500, "Erro interno ao processar a solicitação")]
+        public async Task<IActionResult> DeletarPessoas(Guid id)
+        {
+            if(id == Guid.Empty)
+                return BadRequest("Id está vazio ou é inválido.");
+
+            var pessoaResponse = await _pessoaService.DeletarPessoaAsync(id);
 
             if (!pessoaResponse.Sucesso)
             {
