@@ -16,7 +16,7 @@ builder.Services.AddSwaggerGen(options =>
     {
         Title = "Netrin",
         Version = "v1",
-        Description = "Autor: Felipe Gabriel Cabral - Netrin - .NET 8 - SQLServer - Swagger",
+        Description = "Autor: Felipe Gabriel Cabral - Netrin - C# .NET 8 - Docker - SQLServer - MongoDB - Serilog - Rate Limit - IoC - AutoMapper - FluentValidation - Middlewares - Filters - XUnit - Swagger - ReDoc",
     });
 
     options.EnableAnnotations();
