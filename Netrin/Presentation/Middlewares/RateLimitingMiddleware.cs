@@ -17,7 +17,7 @@ public class RateLimitingMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
-        var chave = context.Connection.RemoteIpAddress.ToString();
+        var chave = context.Connection.RemoteIpAddress!.ToString();
         var agora = DateTime.UtcNow;
         var requestInfo = _requests.GetOrAdd(chave, (0, agora));
 
