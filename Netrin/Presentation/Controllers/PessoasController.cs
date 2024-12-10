@@ -71,5 +71,33 @@ namespace Netrin.Api.Presentation.Controllers
 
             return Ok(pessoaIdresponse.Dados);
         }
+
+        /// <summary>
+        /// Adiciona uma nova Pessoa no sistema.
+        /// </summary>
+        /// <param name="criarPessoasDto"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("AdicionarPessoas")]
+        [SwaggerOperation(Summary = "Adicionar uma nova Pessoa", Description = "Adicionar uma nova Pessoa no sistema")]
+        [SwaggerResponse(200, "Pessoa retornada com sucesso", typeof(ListarPessoasDto))]
+        [SwaggerResponse(404, "Nenhuma Pessoa encontrada")]
+        [SwaggerResponse(429, "Limite de solicitações atingidos")]
+        [SwaggerResponse(500, "Erro interno ao processar a solicitação")]
+        public async Task<IActionResult> AdicionarPessoas([FromBody] CriarPessoasDto criarPessoasDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var pessoaResponse = await _pessoaService.AdicionarPesssoaAsync(criarPessoasDto);
+
+            if (!pessoaResponse.Sucesso)
+            {
+                if (pessoaResponse.Dados is null)
+                    return NotFound(pessoaResponse.Mensagem);
+            }
+
+            return Ok(pessoaResponse);
+        }
     }
 }

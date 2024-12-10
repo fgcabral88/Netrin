@@ -23,10 +23,10 @@ namespace Netrin.Infraestructure.Repositories
             try
             {
                 // Consulta sql todas as pessoas:
-                const string query = "SELECT * FROM Pessoas";
+                const string query = @"SELECT * FROM Pessoas ORDER BY DataCadastro ASC";
 
                 // Abre a conexão com o banco de dados:
-                using var conexao = _dbContext.CriarConexao(); 
+                using var conexao = _dbContext.CriarConexao();
                 conexao.Open();
 
                 // Recupera todas as pessoas no banco de dados:
@@ -87,11 +87,67 @@ namespace Netrin.Infraestructure.Repositories
             }
         }
 
-        public Task<ResponseBase<ListarPessoasDto>> AdicionarPesssoaRepositorioAsync(CriarPessoasDto criarPessoaDto)
+        public async Task<ResponseBase<ListarPessoasDto>> AdicionarPesssoaRepositorioAsync(CriarPessoasDto criarPessoaDto)
         {
-          throw new NotImplementedException();
-        }
+            // Normaliza o campo Estado para maiúsculas:
+            criarPessoaDto.Estado = criarPessoaDto.Estado!.ToUpperInvariant();
 
+            // Cadastra a Pessoa no banco de dados:
+            const string query = @"INSERT INTO Pessoas (Nome, Sobrenome, DataNascimento, Email, Sexo, Telefone, Cpf, Cidade, Estado, DataCadastro, DataAtualizacao, Ativo) OUTPUT INSERTED.Id
+            VALUES (@Nome, @Sobrenome, @DataNascimento, @Email, @Sexo, @Telefone, @Cpf, @Cidade, @Estado, @DataCadastro, @DataAtualizacao, @Ativo);";
+
+            try
+            {
+                // Abre conexão com o banco de dados:
+                using var conexao = _dbContext.CriarConexao();
+                conexao.Open();
+
+                // Consulta para verificar se a Pessoa já existe no banco de dados:
+                const string queryVerificacao = @"SELECT COUNT(1) FROM Pessoas WHERE Nome = @Nome AND Sobrenome = @Sobrenome AND Cpf = @Cpf";
+
+                var existePessoa = await conexao.ExecuteScalarAsync<int>(queryVerificacao, new { criarPessoaDto.Nome, criarPessoaDto.Sobrenome, criarPessoaDto.Cpf });
+
+                if (existePessoa > 0)
+                {
+                    return new ResponseBase<ListarPessoasDto>(sucesso: false, mensagem: "Pessoa ja existe no banco de dados.", dados: null);
+                }
+
+                // Inicia uma transação:
+                using var transacao = conexao.BeginTransaction();
+
+                // Retorna o Id recém-inserido:
+                var pessoaId = await conexao.ExecuteScalarAsync<Guid>(query, criarPessoaDto, transaction: transacao);
+
+                // Valida se a Pessoa foi adicionada ao banco de dados:
+                if (pessoaId == Guid.Empty)
+                {
+                    transacao.Rollback();
+
+                    Log.Warning("Nenhuma Pessoa foi adicionada ao banco de dados.");
+                    return new ResponseBase<ListarPessoasDto>(sucesso: false, mensagem: "Nenhuma Pessoa foi adicionada ao banco de dados.", dados: null);
+                }
+
+                // Consulta a Pessoa recém-inserida:
+                const string querySelect = @"SELECT Id, Nome, Sobrenome, DataNascimento, Email, Sexo, Telefone, Cpf, Cidade, Estado, DataCadastro, DataAtualizacao, Ativo FROM Pessoas WHERE Id = @Id";
+
+                // Recupera a Pessoa no banco de dados:
+                var pessoas = (await conexao.QueryAsync<ListarPessoasDto>(querySelect, new { Id = pessoaId }, transaction: transacao)).ToList();
+
+                transacao.Commit();
+
+                return new ResponseBase<ListarPessoasDto>(sucesso: true, mensagem: "Pessoa cadastrada com sucesso.", dados: pessoas.FirstOrDefault());
+            }
+            catch (SqlException ex)
+            {
+                Log.Error(ex.Message, ex);
+                return new ResponseBase<ListarPessoasDto>(sucesso: false, mensagem: ex.Message, dados: null);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message, ex);
+                return new ResponseBase<ListarPessoasDto>(sucesso: false, mensagem: ex.Message, dados: null);
+            }
+        }
         public Task<ResponseBase<ListarPessoasDto>> EditarPessoaRepositorioAsync(EditarPessoasDto editarPessoaDto)
         {
             throw new NotImplementedException();
