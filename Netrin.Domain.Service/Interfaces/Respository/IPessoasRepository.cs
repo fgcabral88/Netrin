@@ -5,7 +5,7 @@ namespace Netrin.Domain.Service.Interfaces.Respository
 {
     public interface IPessoasRepository
     {
-        Task<ResponseBase<IEnumerable<ListarPessoasDto>>> RetornarPessoaRespositorioAsync();
+        Task<PaginacaoResponseBase<ListarPessoasDto>> RetornarPessoaRespositorioAsync(int page, int pageSize);
 
         Task<ResponseBase<ListarPessoasDto>> RetornarPessoaIdRespositorioAsync(Guid id);
 

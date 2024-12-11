@@ -18,30 +18,26 @@ namespace Netrin.Application.Services
             _pessoaRepository = pessoaRepository;
         }
 
-        public async Task<ResponseBase<IEnumerable<ListarPessoasDto>>> RetornarPessoaAsync()
+        public async Task<PaginacaoResponseBase<ListarPessoasDto>> RetornarPessoaAsync(int page, int pageSize)
         {
             try
             {
-                // Busca os dados no repositório:
-                var pessoasResponse = await _pessoaRepository.RetornarPessoaRespositorioAsync();
+                // Busca os dados no repositório com paginação:
+                var pessoasResponse = await _pessoaRepository.RetornarPessoaRespositorioAsync(page, pageSize);
 
-                // Verifica se a operação foi bem-sucedida e se há dados:
                 if (!pessoasResponse.Sucesso || pessoasResponse.Dados is null || !pessoasResponse.Dados.Any())
                 {
-                    Log.Warning("Nao foram encontradas pessoas cadastradas no banco de dados.");
-                    return new ResponseBase<IEnumerable<ListarPessoasDto>>(sucesso: false, mensagem: "Não foram encontradas pessoas cadastradas no banco de dados.", dados: null);
+                    Log.Warning("Nenhuma pessoa encontrada.");
+                    return new PaginacaoResponseBase<ListarPessoasDto>(sucesso: false, mensagem: "Nenhuma pessoa encontrada.", dados: null, totalCount: 0);
                 }
 
-                // Mapeia os dados para o Dto:
-                var pessoas = _mapper.Map<List<ListarPessoasDto>>(pessoasResponse.Dados);
-
-                Log.Information($"Pessoas retornadas com sucesso. Total: {pessoas.Count}");
-                return new ResponseBase<IEnumerable<ListarPessoasDto>>(sucesso: true, mensagem: "Pessoas retornadas com sucesso.", dados: pessoas);
+                Log.Information($"Pessoas retornadas com sucesso. Total: {pessoasResponse.Dados.Count()}");
+                return pessoasResponse;
             }
             catch (Exception ex)
             {
                 Log.Error($"Erro ao retornar pessoas: {ex.Message}", ex);
-                return new ResponseBase<IEnumerable<ListarPessoasDto>>(sucesso: false, mensagem: "Erro interno.", dados: null);
+                return new PaginacaoResponseBase<ListarPessoasDto>(sucesso: false, mensagem: "Erro interno.", dados: null, totalCount: 0);
             }
         }
 

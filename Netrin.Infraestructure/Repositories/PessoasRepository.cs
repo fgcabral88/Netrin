@@ -18,38 +18,37 @@ namespace Netrin.Infraestructure.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<ResponseBase<IEnumerable<ListarPessoasDto>>> RetornarPessoaRespositorioAsync()
+        public async Task<PaginacaoResponseBase<ListarPessoasDto>> RetornarPessoaRespositorioAsync(int page, int pageSize)
         {
             try
             {
-                // Consulta sql todas as pessoas:
-                const string query = @"SELECT * FROM Pessoas ORDER BY DataCadastro ASC";
+                // Calcular o OFFSET:
+                int offset = (page - 1) * pageSize;
+
+                // Consulta SQL com paginação:
+                const string query = @"SELECT * FROM Pessoas ORDER BY DataCadastro ASC OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY; SELECT COUNT(*) FROM Pessoas;";
 
                 // Abre a conexão com o banco de dados:
                 using var conexao = _dbContext.CriarConexao();
                 conexao.Open();
 
-                // Recupera todas as pessoas no banco de dados:
-                var pessoas = await conexao.QueryAsync<ListarPessoasDto>(query);
+                using var multi = await conexao.QueryMultipleAsync(query, new { Offset = offset, pageSize = pageSize });
 
-                // Valida se as pessoas foram encontradas:
+                var pessoas = await multi.ReadAsync<ListarPessoasDto>();
+
+                var contagemTotal = await multi.ReadSingleAsync<int>();
+
                 if (!pessoas.Any())
                 {
-                    return new ResponseBase<IEnumerable<ListarPessoasDto>>(sucesso: false, mensagem: "Não foram encontrados pessoas no banco de dados.", dados: null);
+                    return new PaginacaoResponseBase<ListarPessoasDto>(sucesso: false, mensagem: "Nenhuma pessoa encontrada no banco de dados.", dados: null, totalCount: 0);
                 }
 
-                // Retonar as pessoas encontradas:
-                return new ResponseBase<IEnumerable<ListarPessoasDto>>(sucesso: true, mensagem: "Pessoas recuperadas com sucesso do banco de dados.", dados: pessoas);
-            }
-            catch (SqlException ex)
-            {
-                Log.Error(ex.Message, ex);
-                return new ResponseBase<IEnumerable<ListarPessoasDto>>(sucesso: false, mensagem: ex.Message, dados: null);
+                return new PaginacaoResponseBase<ListarPessoasDto>(sucesso: true, mensagem: "Pessoas recuperadas com sucesso do banco de dados.", dados: pessoas.ToList(), totalCount: contagemTotal);
             }
             catch (Exception ex)
             {
                 Log.Error(ex.Message, ex);
-                return new ResponseBase<IEnumerable<ListarPessoasDto>>(sucesso: false, mensagem: ex.Message, dados: null);
+                return new PaginacaoResponseBase<ListarPessoasDto>(sucesso: false, mensagem: ex.Message, dados: null, totalCount: 0);
             }
         }
 

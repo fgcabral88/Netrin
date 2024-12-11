@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Netrin.Application.Dtos.Pessoa;
+using Netrin.Application.Responses;
 using Netrin.Domain.Service.Interfaces.Services;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -23,14 +24,14 @@ namespace Netrin.Api.Presentation.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("RetornarPessoas")]
-        [SwaggerOperation(Summary = "Retornar todas as Pessoas", Description = "Retorna uma lista com todas as Pessoas disponíveis no sistema")]
-        [SwaggerResponse(200, "Lista de Pessoas retornada com sucesso", typeof(IEnumerable<ListarPessoasDto>))]
+        [SwaggerOperation(Summary = "Retornar todas as Pessoas com paginação", Description = "Retorna uma lista paginada de Pessoas disponíveis no sistema")]
+        [SwaggerResponse(200, "Lista de Pessoas retornada com sucesso", typeof(PaginacaoResponseBase<ListarPessoasDto>))]
         [SwaggerResponse(404, "Nenhuma Pessoa encontrada")]
         [SwaggerResponse(429, "Limite de solicitações atingido")]
         [SwaggerResponse(500, "Erro interno ao processar a solicitação")]
-        public async Task<IActionResult> RetornarPessoas()
+        public async Task<IActionResult> RetornarPessoas([FromQuery] int page = 1, [FromQuery] int pageSize = 4)
         {
-            var pessoasResponse = await _pessoaService.RetornarPessoaAsync();
+            var pessoasResponse = await _pessoaService.RetornarPessoaAsync(page, pageSize);
 
             if (!pessoasResponse.Sucesso)
             {
@@ -40,8 +41,17 @@ namespace Netrin.Api.Presentation.Controllers
                 return BadRequest(pessoasResponse.Mensagem);
             }
 
-            return Ok(pessoasResponse.Dados);
+            var resultado = new 
+            { 
+                dados = pessoasResponse.Dados, 
+                contagemTotal = pessoasResponse.ContagemTotal, 
+                sucesso = pessoasResponse.Sucesso, 
+                mensagem = pessoasResponse.Mensagem 
+            };
+
+            return Ok(resultado);
         }
+
 
         /// <summary>
         /// Retorna uma Pessoa pelo Id informado.
