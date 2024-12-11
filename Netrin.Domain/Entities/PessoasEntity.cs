@@ -7,7 +7,7 @@ namespace Netrin.Domain.Entities
     {
         public string Nome { get; set; }
         public string Sobrenome { get; set; }
-        public DateOnly DataNascimento { get; set; }
+        public DateTime DataNascimento { get; set; }
         public string Email { get; set; }
         public SexoEnum Sexo { get; set; }
         public string Telefone { get; set; }
@@ -18,7 +18,7 @@ namespace Netrin.Domain.Entities
         public DateTime DataAtualizacao { get; private set; }
         public AtivoEnum Status { get; set; }
 
-        public PessoasEntity(string nome, string sobrenome, DateOnly dataNascimento, string email, SexoEnum sexo,
+        public PessoasEntity(string nome, string sobrenome, DateTime dataNascimento, string email, SexoEnum sexo,
             string telefone, string cpf, string cidade, string estado)
         {
             Nome = nome;
