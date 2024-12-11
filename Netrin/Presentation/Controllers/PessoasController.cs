@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Netrin.Application.Dtos.Pessoa;
 using Netrin.Application.Responses;
 using Netrin.Domain.Service.Interfaces.Services;
@@ -9,6 +10,7 @@ namespace Netrin.Api.Presentation.Controllers
     [Route("api/[controller]")]
     [Produces("application/json")]
     [ApiController]
+    [Authorize]
     public class PessoasController : ControllerBase
     {
         private readonly IPessoasService _pessoaService;
@@ -28,6 +30,7 @@ namespace Netrin.Api.Presentation.Controllers
         [SwaggerResponse(200, "Lista de Pessoas retornada com sucesso", typeof(PaginacaoResponseBase<ListarPessoasDto>))]
         [SwaggerResponse(404, "Nenhuma Pessoa encontrada")]
         [SwaggerResponse(429, "Limite de solicitações atingido")]
+        [SwaggerResponse(401, "Usuário não autorizado")]
         [SwaggerResponse(500, "Erro interno ao processar a solicitação")]
         public async Task<IActionResult> RetornarPessoas([FromQuery] int page = 1, [FromQuery] int pageSize = 4)
         {
@@ -63,6 +66,7 @@ namespace Netrin.Api.Presentation.Controllers
         [SwaggerResponse(200, "Pessoa retornada com sucesso", typeof(ListarPessoasDto))]
         [SwaggerResponse(404, "Nenhuma Pessoa encontrada")]
         [SwaggerResponse(429, "Limite de solicitações atingidos")]
+        [SwaggerResponse(401, "Usuário não autorizado")]
         [SwaggerResponse(500, "Erro interno ao processar a solicitação")]
         public async Task<IActionResult> RetornarPessoasId(Guid id)
         {
@@ -93,6 +97,7 @@ namespace Netrin.Api.Presentation.Controllers
         [SwaggerResponse(200, "Pessoa retornada com sucesso", typeof(ListarPessoasDto))]
         [SwaggerResponse(404, "Nenhuma Pessoa encontrada")]
         [SwaggerResponse(429, "Limite de solicitações atingidos")]
+        [SwaggerResponse(401, "Usuário não autorizado")]
         [SwaggerResponse(500, "Erro interno ao processar a solicitação")]
         public async Task<IActionResult> AdicionarPessoas([FromBody] CriarPessoasDto criarPessoasDto)
         {
@@ -121,6 +126,7 @@ namespace Netrin.Api.Presentation.Controllers
         [SwaggerResponse(200, "Pessoa retornada com sucesso", typeof(ListarPessoasDto))]
         [SwaggerResponse(404, "Nenhuma Pessoa encontrada")]
         [SwaggerResponse(429, "Limite de solicitações atingidos")]
+        [SwaggerResponse(401, "Usuário não autorizado")]
         [SwaggerResponse(500, "Erro interno ao processar a solicitação")]
         public async Task<IActionResult> EditarPessoas([FromBody] EditarPessoasDto editarPessoasDto)
         {
@@ -149,6 +155,7 @@ namespace Netrin.Api.Presentation.Controllers
         [SwaggerResponse(200, "Pessoa retornada com sucesso", typeof(ListarPessoasDto))]
         [SwaggerResponse(404, "Nenhuma Pessoa encontrada")]
         [SwaggerResponse(429, "Limite de solicitações atingidos")]
+        [SwaggerResponse(401, "Usuário não autorizado")]
         [SwaggerResponse(500, "Erro interno ao processar a solicitação")]
         public async Task<IActionResult> DeletarPessoas(Guid id)
         {

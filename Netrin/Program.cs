@@ -1,7 +1,12 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Netrin.Application.Helpers;
 using Netrin.Infraestructure.Data.Context;
 using Netrin.Infraestructure.IoC;
 using Serilog;
+using System.Text;
+using static Netrin.Application.Helpers.JwtTokenHelper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +26,30 @@ builder.Services.AddSwaggerGen(options =>
 
     options.EnableAnnotations();
 });
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettings.Issuer,
+        ValidAudience = jwtSettings.Audience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
+    };
+});
+
+builder.Services.AddSingleton<JwtTokenHelper>();
+
+builder.Services.AddAuthorization();
 
 // Registrar dependências IoC
 builder.Services.AdicionarDependencias();
