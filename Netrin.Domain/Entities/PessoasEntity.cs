@@ -5,24 +5,21 @@ namespace Netrin.Domain.Entities
 {
     public class PessoasEntity : BaseEntity
     {
-        public required string Nome { get; set; }
-        public required string Sobrenome { get; set; }
-        public required DateTime DataNascimento { get; set; }
-        public required string Email { get; set; }
-        public required SexoEnum Sexo { get; set; }
-        public required string Telefone { get; set; }
-        public required string Cpf { get; set; }
-        public required string Cidade { get; set; }
-        public required string Estado { get; set; }
-        public required DateTime DataCadastro { get; set; } 
-        public required DateTime DataAtualizacao { get; set; }
-        public required AtivoEnum Ativo { get; set; }
+        public string Nome { get; set; }
+        public string Sobrenome { get; set; }
+        public DateTime DataNascimento { get; set; }
+        public string Email { get; set; }
+        public SexoEnum Sexo { get; set; }
+        public string Telefone { get; set; }
+        public string Cpf { get; set; }
+        public string Cidade { get; set; }
+        public string Estado { get; set; }
+        public DateTime DataCadastro { get; private set; }
+        public DateTime DataAtualizacao { get; private set; }
+        public AtivoEnum Status { get; set; }
 
-        public PessoasEntity() { }
-
-        public PessoasEntity(string nome, string sobrenome, DateTime dataNascimento, string email, SexoEnum sexo, 
-            string telefone, string cpf, string cidade, string estado, DateTime dataCadastro, 
-            DateTime dataAtualizacao, AtivoEnum ativo)
+        public PessoasEntity(string nome, string sobrenome, DateTime dataNascimento, string email, SexoEnum sexo,
+            string telefone, string cpf, string cidade, string estado)
         {
             Nome = nome;
             Sobrenome = sobrenome;
@@ -33,9 +30,22 @@ namespace Netrin.Domain.Entities
             Cpf = cpf;
             Cidade = cidade;
             Estado = estado;
-            DataCadastro = dataCadastro;
-            DataAtualizacao = dataAtualizacao;
-            Ativo = ativo;
+            DataCadastro = DateTime.UtcNow; // Define a data de cadastro automaticamente
+            DataAtualizacao = DateTime.UtcNow; // Define a data de atualização automaticamente
+            Status = AtivoEnum.Ativo; // Define um status padrão
+        }
+
+        public void AtualizarDados(string nome, string sobrenome, string email, SexoEnum sexo,
+            string telefone, string cidade, string estado)
+        {
+            Nome = nome;
+            Sobrenome = sobrenome;
+            Email = email;
+            Sexo = sexo;
+            Telefone = telefone;
+            Cidade = cidade;
+            Estado = estado;
+            DataAtualizacao = DateTime.UtcNow; // Atualiza a data de modificação
         }
     }
 }

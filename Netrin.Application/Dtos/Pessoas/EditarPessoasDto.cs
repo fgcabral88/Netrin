@@ -1,56 +1,44 @@
 ﻿using Netrin.Domain.Core.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Netrin.Application.Dtos.Pessoa
 {
     public class EditarPessoasDto : BaseDto
     {
-        [JsonPropertyOrder(2)]
         [JsonPropertyName("Nome")]
-        public required string Nome { get; set; }
+        [Required(ErrorMessage = "O nome é obrigatório.")]
+        public string Nome { get; set; }
 
-        [JsonPropertyOrder(3)]
         [JsonPropertyName("Sobrenome")]
-        public required string Sobrenome { get; set; }
+        [Required(ErrorMessage = "O sobrenome é obrigatório.")]
+        public string Sobrenome { get; set; }
 
-        [JsonPropertyOrder(4)]
         [JsonPropertyName("Data de Nascimento")]
-        public required DateTime DataNascimento { get; set; }
+        [Required(ErrorMessage = "A data de nascimento é obrigatória.")]
+        public DateTime DataNascimento { get; set; }
 
-        [JsonPropertyOrder(5)]
         [JsonPropertyName("E-mail")]
-        public required string Email { get; set; }
+        [EmailAddress(ErrorMessage = "O e-mail deve ser um endereço de e-mail válido.")]
+        public string Email { get; set; }
 
-        [JsonPropertyOrder(6)]
         [JsonPropertyName("Sexo")]
-        public required SexoEnum Sexo { get; set; }
+        public SexoEnum? Sexo { get; set; } 
 
-        [JsonPropertyOrder(7)]
         [JsonPropertyName("Telefone")]
-        public required string Telefone { get; set; }
+        [Phone(ErrorMessage = "O telefone deve ser um número de telefone válido.")]
+        public string Telefone { get; set; }
 
-        [JsonPropertyOrder(8)]
         [JsonPropertyName("CPF")]
-        public required string Cpf { get; set; }
+        [Required(ErrorMessage = "O CPF é obrigatório.")]
+        public string Cpf { get; set; }
 
-        [JsonPropertyOrder(9)]
         [JsonPropertyName("Cidade")]
-        public required string Cidade { get; set; }
+        [Required(ErrorMessage = "A cidade é obrigatória.")]
+        public string Cidade { get; set; }
 
-        [JsonPropertyOrder(10)]
         [JsonPropertyName("Estado")]
-        public required string Estado { get; set; }
-
-        [JsonPropertyOrder(11)]
-        [JsonPropertyName("Data Cadastro")]
-        public required DateTime DataCadastro { get; set; }
-
-        [JsonPropertyOrder(12)]
-        [JsonPropertyName("Data Atualizacao")]
-        public DateTime DataAtualizacao { get; set; }
-
-        [JsonPropertyOrder(13)]
-        [JsonPropertyName("Status")]
-        public required AtivoEnum Ativo { get; set; }
+        [Required(ErrorMessage = "O estado é obrigatório.")]
+        public string Estado { get; set; }
     }
 }

@@ -52,7 +52,6 @@ namespace Netrin.Api.Presentation.Controllers
             return Ok(resultado);
         }
 
-
         /// <summary>
         /// Retorna uma Pessoa pelo Id informado.
         /// </summary>
