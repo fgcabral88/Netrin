@@ -8,92 +8,55 @@ namespace Netrin.Application.Behaviors.Validations
         public EditarPessoasDtoValidation()
         {
             RuleFor(x => x.Id)
-                .NotEmpty()
-                .WithMessage("O campo Id é obrigatório.");
+            .NotEmpty().WithMessage("O ID é obrigatório.");
 
             RuleFor(x => x.Nome)
-               .NotEmpty()
-               .WithMessage("O campo Nome é obrigatório.")
-               .Length(2, 255)
-               .WithMessage("O campo Nome deve ter entre 2 e 255 caracteres.");
+                .NotEmpty().WithMessage("O nome é obrigatório.")
+                .Length(2, 100).WithMessage("O nome deve ter entre 2 e 100 caracteres.");
 
             RuleFor(x => x.Sobrenome)
-                .NotEmpty()
-                .WithMessage("O campo Sobrenome é obrigatório.")
-                .Length(2, 255)
-                .WithMessage("O campo Sobrenome deve ter entre 2 e 255 caracteres.");
+                .NotEmpty().WithMessage("O sobrenome é obrigatório.")
+                .Length(2, 100).WithMessage("O sobrenome deve ter entre 2 e 100 caracteres.");
 
             RuleFor(x => x.DataNascimento)
                 .NotEmpty()
-                .WithMessage("O campo Data de Nascimento é obrigatório.")
-                .Must(ValidarIdadeMinima)
-                .WithMessage("O usuário deve ter pelo menos 18 anos.");
+                .WithMessage("A data de nascimento é obrigatória.")
+                .Must(data => data < DateOnly.FromDateTime(DateTime.Now))
+                .WithMessage("A data de nascimento deve ser anterior à data atual.");
 
             RuleFor(x => x.Email)
-                .NotEmpty()
-                .WithMessage("O campo E-mail é obrigatório.")
                 .EmailAddress()
-                .WithMessage("O campo E-mail deve ser válido.");
+                .WithMessage("O e-mail deve ser um endereço de e-mail válido.")
+                .Length(5, 255)
+                .WithMessage("O e-mail deve ter entre 5 e 255 caracteres.")
+                .When(x => !string.IsNullOrEmpty(x.Email));
 
             RuleFor(x => x.Sexo)
                 .IsInEnum()
-                .WithMessage("O campo Sexo deve ser um valor válido.");
+                .WithMessage("O sexo deve ser 1 (masculino) ou 2 (feminino).")
+                .When(x => x.Sexo.HasValue); 
 
             RuleFor(x => x.Telefone)
-                .NotEmpty()
-                .WithMessage("O campo Telefone é obrigatório.")
-                .Matches(@"^\+?[1-9]\d{1,14}$")
-                .WithMessage("O campo Telefone deve estar no formato internacional (+XX... ou XX...).");
+                .Matches(@"^\d{11}$")
+                .WithMessage("O telefone deve ter 11 dígitos.")
+                .When(x => !string.IsNullOrEmpty(x.Telefone));
 
             RuleFor(x => x.Cpf)
-                .NotEmpty()
-                .WithMessage("O campo CPF é obrigatório.")
-                .Must(ValidarCPF)
-                .WithMessage("O campo CPF deve ser válido.");
+                .Matches(@"^\d{11}$")
+                .WithMessage("O CPF deve ter 11 dígitos.")
+                .When(x => !string.IsNullOrEmpty(x.Cpf)); 
 
             RuleFor(x => x.Cidade)
                 .NotEmpty()
-                .WithMessage("O campo Cidade é obrigatório.")
+                .WithMessage("A cidade é obrigatória.")
                 .Length(2, 100)
-                .WithMessage("O campo Cidade deve ter entre 2 e 255 caracteres.");
+                .WithMessage("A cidade deve ter entre 2 e 100 caracteres.");
 
             RuleFor(x => x.Estado)
                 .NotEmpty()
-                .WithMessage("O campo Estado é obrigatório.")
-                .Length(2)
-                .WithMessage("O campo Estado deve conter exatamente 2 caracteres.");
-
-            RuleFor(x => x.DataCadastro)
-                .NotEmpty()
-                .WithMessage("O campo Data de Cadastro é obrigatório.")
-                .LessThanOrEqualTo(DateTime.Now)
-                .WithMessage("O campo Data de Cadastro não pode ser no futuro.");
-
-            RuleFor(x => x.DataAtualizacao)
-                .NotEmpty()
-                .WithMessage("O campo Data de Atualização é obrigatório.")
-                .GreaterThanOrEqualTo(x => x.DataCadastro)
-                .WithMessage("A Data de Atualização não pode ser anterior à Data de Cadastro.");
-
-            RuleFor(x => x.Ativo)
-                .IsInEnum()
-                .WithMessage("O campo Status deve ser um valor válido.");
-        }
-
-        // Validação CPF
-        private bool ValidarCPF(string cpf)
-        {
-            return cpf.Length == 11 && long.TryParse(cpf, out _);
-        }
-
-        // Validação Idade Mínima
-        private bool ValidarIdadeMinima(DateTime date)
-        {
-            var idade = DateTime.Now.Year - date.Year;
-
-            if (date > DateTime.Now.AddYears(-idade)) idade--;
-
-            return idade >= 18;
+                .WithMessage("O estado é obrigatório.")
+                .Length(2, 100)
+                .WithMessage("O estado deve ter entre 2 e 100 caracteres.");
         }
     }
 }
