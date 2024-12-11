@@ -1,7 +1,12 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Netrin.Application.Helpers;
 using Netrin.Infraestructure.Data.Context;
 using Netrin.Infraestructure.IoC;
 using Serilog;
+using System.Text;
+using static Netrin.Application.Helpers.JwtTokenHelper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,11 +21,62 @@ builder.Services.AddSwaggerGen(options =>
     {
         Title = "Netrin",
         Version = "v1",
-        Description = "Autor: Felipe Gabriel Cabral - Netrin - C# .NET 8 - Docker - SQLServer - MongoDB - Serilog - Rate Limit - IoC - AutoMapper - FluentValidation - Middlewares - Filters - XUnit - Swagger - ReDoc",
+        Description = "Autor: Felipe Gabriel Cabral - Netrin - C# .NET 8 - Docker - JWT - SQLServer - MongoDB - Serilog - Rate Limit - IoC - AutoMapper - FluentValidation - Middlewares - Filters - XUnit - Swagger - ReDoc",
+    });
+
+    // Configuração do esquema de autenticação
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Insira o token JWT no formato: Bearer {seu token}"
+    });
+
+    // Configuração para aplicar segurança globalmente
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
     });
 
     options.EnableAnnotations();
 });
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettings.Issuer,
+        ValidAudience = jwtSettings.Audience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
+    };
+});
+
+builder.Services.AddSingleton<JwtTokenHelper>();
+
+builder.Services.AddAuthorization();
 
 // Registrar dependências IoC
 builder.Services.AdicionarDependencias();
@@ -49,6 +105,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1"));
 }
+
+app.UseAuthentication();
+
+app.UseAuthorization();
 
 app.UseMiddleware<RateLimitingMiddleware>(3, TimeSpan.FromMinutes(1)); 
 
