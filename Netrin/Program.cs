@@ -21,7 +21,34 @@ builder.Services.AddSwaggerGen(options =>
     {
         Title = "Netrin",
         Version = "v1",
-        Description = "Autor: Felipe Gabriel Cabral - Netrin - C# .NET 8 - Docker - SQLServer - MongoDB - Serilog - Rate Limit - IoC - AutoMapper - FluentValidation - Middlewares - Filters - XUnit - Swagger - ReDoc",
+        Description = "Autor: Felipe Gabriel Cabral - Netrin - C# .NET 8 - Docker - JWT - SQLServer - MongoDB - Serilog - Rate Limit - IoC - AutoMapper - FluentValidation - Middlewares - Filters - XUnit - Swagger - ReDoc",
+    });
+
+    // Configuração do esquema de autenticação
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Insira o token JWT no formato: Bearer {seu token}"
+    });
+
+    // Configuração para aplicar segurança globalmente
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
     });
 
     options.EnableAnnotations();
@@ -78,6 +105,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1"));
 }
+
+app.UseAuthentication();
+
+app.UseAuthorization();
 
 app.UseMiddleware<RateLimitingMiddleware>(3, TimeSpan.FromMinutes(1)); 
 
