@@ -29,7 +29,7 @@ namespace Netrin.Api.Presentation.Controllers
         public IActionResult Login([FromForm] LoginDto loginDto)
         {
             // Substitua por sua lógica de autenticação.
-            if (loginDto.Username == "Felipe" && loginDto.Password == "Netrin")
+            if (loginDto.Login == "Felipe" && loginDto.Senha == "Netrin")
             {
                 var token = _jwtTokenHelper.GenerateToken("1", "Admin");
                 return Ok(new { Token = token });
