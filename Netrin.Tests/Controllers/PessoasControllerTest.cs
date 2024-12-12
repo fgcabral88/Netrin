@@ -162,35 +162,26 @@ public class PessoasControllerTests
         Assert.IsType<SerializableError>(badRequestResult.Value);
     }
 
-    //[Fact]
-    //public async Task DeletarPessoas_ShouldReturnOk_WhenServiceReturnsSuccess()
-    //{
-    //    // Arrange
-    //    var response = new ResponseBase<string>
-    //    {
-    //        Sucesso = true,
-    //        Dados = "Deleted",
-    //        Mensagem = "Success"
-    //    };
-    //    var id = Guid.NewGuid();
-    //    _mockPessoasService.Setup(s => s.DeletarPessoaAsync(id)).ReturnsAsync(response);
+    [Fact]
+    public async Task DeletarPessoas_DeveRetornarOk_QuandoServicoRetornarSucesso()
+    {
 
-    //    // Act
-    //    var result = await _controller.DeletarPessoas(id);
+    }
 
-    //    // Assert
-    //    var okResult = Assert.IsType<OkObjectResult>(result);
-    //    Assert.Equal(response, okResult.Value);
-    //}
+    [Fact]
+    public async Task DeletarPessoas_DeveRetornarBadRequest_QuandoIdEstiverVazio()
+    {
+        //Act
+        
+        //Chama o método 'DeletarPessoas' passando um GUID vazio como parâmetro.
+        var resultado = await _controller.DeletarPessoas(Guid.Empty);
 
-    //[Fact]
-    //public async Task DeletarPessoas_ShouldReturnBadRequest_WhenIdIsEmpty()
-    //{
-    //    // Act
-    //    var result = await _controller.DeletarPessoas(Guid.Empty);
+        // Assert
+        
+        //Verifica se o resultado retornado é do tipo 'BadRequestObjectResult'.
+        var resultadoBadRequest = Assert.IsType<BadRequestObjectResult>(resultado);
 
-    //    // Assert
-    //    var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-    //    Assert.Equal("Id está vazio ou é inválido.", badRequestResult.Value);
-    //}
+        //Confirma que a mensagem de erro retornada corresponde ao esperado.
+        Assert.Equal("Id está vazio ou é inválido.", resultadoBadRequest.Value);
+    }
 }
