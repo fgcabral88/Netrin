@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Netrin.Application.Dtos.Login;
 using Netrin.Application.Helpers;
+using Serilog;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Netrin.Api.Presentation.Controllers
@@ -31,10 +32,13 @@ namespace Netrin.Api.Presentation.Controllers
             if (loginDto.Login == "Felipe" && loginDto.Senha == "Netrin")
             {
                 var token = _jwtTokenHelper.GenerateToken("1", "Admin");
+
+                Log.Information("Usuário logado com sucesso");
                 return Ok(new { Token = token });
             }
 
-            return Unauthorized("Credenciais inválidas. Tente novamente!");
+            Log.Warning("Usuário ou senha inválidos");
+            return Unauthorized("Usuário ou senha inválidos. Tente novamente!");
         }
     }
 }
