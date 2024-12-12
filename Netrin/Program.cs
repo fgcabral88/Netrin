@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Netrin.Api.Presentation.Filters;
 using Netrin.Application.Helpers;
 using Netrin.Infraestructure.Data.Context;
 using Netrin.Infraestructure.IoC;
@@ -11,9 +12,11 @@ using static Netrin.Application.Helpers.JwtTokenHelper;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddControllers(options =>
+{
+    // Registrando os filtros
+    options.Filters.Add<AcaoFilter>();
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -54,6 +57,7 @@ builder.Services.AddSwaggerGen(options =>
     options.EnableAnnotations();
 });
 
+// Registrando JWT
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -75,19 +79,17 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddSingleton<JwtTokenHelper>();
-
 builder.Services.AddAuthorization();
 
-// Registrar dependências IoC
+// Registrando Injeção de dependências IoC
 builder.Services.AdicionarDependencias();
 
-// Adiciona a string de conexão ao contêiner de serviços
+// Registrando adiciona a string de conexão ao contêiner de serviços
 builder.Services.AddScoped<SqlDbContext>(sp =>
     new SqlDbContext(builder.Configuration.GetConnectionString("SqlServer")!));
 
-// Serilog
+// Registrando o Serilog
 builder.Host.UseSerilog();
-
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration) // Lê as configurações do appsettings.json
     .Enrich.FromLogContext() // Adiciona informações de contexto
@@ -107,22 +109,16 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseAuthentication();
-
 app.UseAuthorization();
-
 app.UseMiddleware<RateLimitingMiddleware>(3, TimeSpan.FromMinutes(1)); 
-
 app.UseReDoc(options =>
 {
     options.DocumentTitle = "Netrin - Redoc";
     options.SpecUrl = "/swagger/v1/swagger.json";
     options.RoutePrefix = "redoc";
 });
-
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
