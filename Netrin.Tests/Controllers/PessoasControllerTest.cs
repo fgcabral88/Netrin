@@ -111,41 +111,56 @@ public class PessoasControllerTests
     }
 
     [Fact]
-    public async Task AdicionarPessoas_ShouldReturnOk_WhenServiceReturnsSuccess()
+    public async Task AdicionarPessoas_DeveRetornarOk_QuandoServicoRetornarSucesso()
     {
         // Arrange
-        var response = new ResponseBase<ListarPessoasDto>
-        {
-            Sucesso = true,
-            Dados = new ListarPessoasDto(),
-            Mensagem = "Success"
-        };
 
+        //Cria uma resposta simulada com sucesso para o serviço, indicando que a operação foi bem-sucedida e contendo um objeto ListarPessoasDto.
+        var resposta = new ResponseBase<ListarPessoasDto>(true, "Sucesso", new ListarPessoasDto());
+
+        //Cria um objeto com os dados necessários para adicionar uma nova pessoa. Este objeto será passado como parâmetro para o método do controlador.
         var criarPessoasDto = new CriarPessoasDto();
-        _mockPessoasService.Setup(s => s.AdicionarPesssoaAsync(criarPessoasDto)).ReturnsAsync(response);
+
+        //Configura o mock do serviço (_mockPessoasService) para retornar a resposta simulada quando o método AdicionarPesssoaAsync for chamado, passando o objeto criarPessoasDto.
+        _mockPessoasService.Setup(s => s.AdicionarPesssoaAsync(criarPessoasDto)).ReturnsAsync(resposta);
 
         // Act
+
+        //Chama o método do controlador (AdicionarPessoas) que será testado, passando o objeto criarPessoasDto como parâmetro.
         var result = await _controller.AdicionarPessoas(criarPessoasDto);
 
         // Assert
+
+        //Verifica se o resultado retornado é do tipo OkObjectResult, o que indica que a operação foi bem-sucedida (status HTTP 200).
         var okResult = Assert.IsType<OkObjectResult>(result);
-        Assert.Equal(response, okResult.Value);
+
+        //Verifica se o valor retornado dentro do OkObjectResult é igual à resposta simulada. Isso garante que o controlador retornou os dados esperados.
+        Assert.Equal(resposta, okResult.Value);
     }
 
-    //[Fact]
-    //public async Task AdicionarPessoas_ShouldReturnBadRequest_WhenModelStateIsInvalid()
-    //{
-    //    // Arrange
-    //    _controller.ModelState.AddModelError("Name", "Required");
-    //    var criarPessoasDto = new CriarPessoasDto();
+    [Fact]
+    public async Task AdicionarPessoas_DeveRetornarBadRequest_QuandoModelStateForInvalido()
+    {
+        // Arrange
+        //Adiciona um erro de validação no ModelState para simular que o modelo está inválido. No caso, estou dizendo que o campo "Nome" é obrigatório.
+        _controller.ModelState.AddModelError("Nome", "Obrigatório");
 
-    //    // Act
-    //    var result = await _controller.AdicionarPessoas(criarPessoasDto);
+        //Cria um objeto CriarPessoasDto com dados inválidos (nesse caso, é apenas o objeto vazio, que causa falha na validação devido ao ModelState).
+        var criarPessoasDto = new CriarPessoasDto();
 
-    //    // Assert
-    //    var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-    //    Assert.IsType<SerializableError>(badRequestResult.Value);
-    //}
+        // Act
+
+        //Chama o método AdicionarPessoas do controlador com o objeto inválido (criarPessoasDto) e que possui erros de validação no ModelState.
+        var result = await _controller.AdicionarPessoas(criarPessoasDto);
+
+        // Assert
+
+        //Verifica se o resultado retornado é do tipo BadRequestObjectResult, indicando que o modelo não passou na validação e retornou um erro (status HTTP 400).
+        var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+
+        //Verifica se o valor retornado dentro do BadRequestObjectResult é do tipo SerializableError, que é o tipo usado para armazenar os erros de validação.
+        Assert.IsType<SerializableError>(badRequestResult.Value);
+    }
 
     //[Fact]
     //public async Task DeletarPessoas_ShouldReturnOk_WhenServiceReturnsSuccess()
