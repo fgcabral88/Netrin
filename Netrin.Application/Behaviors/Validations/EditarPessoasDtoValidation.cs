@@ -29,14 +29,6 @@ namespace Netrin.Application.Behaviors.Validations
                 .Length(2, 100)
                 .WithMessage("O sobrenome deve ter entre 2 e 100 caracteres.");
 
-            //RuleFor(x => x.DataNascimento)
-            //    .NotNull()
-            //    .WithMessage("A data de nascimento é obrigatória.")
-            //    .NotEmpty()
-            //    .WithMessage("A data de nascimento é obrigatória.")
-            //    .Must(data => data < DateOnly.FromDateTime(DateTime.Now))
-            //    .WithMessage("A data de nascimento deve ser anterior à data atual.");
-
             RuleFor(x => x.DataNascimento)
                 .NotNull()
                 .WithMessage("O nome é obrigatório.")
@@ -55,14 +47,6 @@ namespace Netrin.Application.Behaviors.Validations
                 .Length(5, 30)
                 .WithMessage("O e-mail deve ter entre 5 e 30 caracteres.");
 
-            RuleFor(x => x.Sexo)
-                .NotNull()
-                .WithMessage("O sexo é obrigatório.")
-                .NotEmpty()
-                .WithMessage("O sexo é obrigatório.")
-                .IsInEnum()
-                .WithMessage("O sexo deve ser 1 (masculino) ou 2 (feminino).");
-
             RuleFor(x => x.Telefone)
                 .NotNull()
                 .WithMessage("O Telefone é obrigatório.")
@@ -70,14 +54,6 @@ namespace Netrin.Application.Behaviors.Validations
                 .WithMessage("O telefone é obrigatório.")
                 .Matches(@"^\d{11}$")
                 .WithMessage("O telefone deve ter 11 dígitos.");
-
-            RuleFor(x => x.Cpf)
-                .NotNull()
-                .WithMessage("O CPF é obrigatório.")
-                .NotEmpty()
-                .WithMessage("O CPF é obrigatório.")
-                .Matches(@"^\d{11}$")
-                .WithMessage("O CPF deve ter 11 dígitos.");
 
             RuleFor(x => x.Cidade)
                 .NotNull()

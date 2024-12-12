@@ -92,8 +92,8 @@ namespace Netrin.Infraestructure.Repositories
             criarPessoaDto.Estado = criarPessoaDto.Estado!.ToUpperInvariant();
 
             // Cadastra a Pessoa no banco de dados:
-            const string query = @"INSERT INTO Pessoas (Nome, Sobrenome, DataNascimento, Email, Sexo, Telefone, Cpf, Cidade, Estado, DataCadastro, DataAtualizacao, Ativo) OUTPUT INSERTED.Id
-            VALUES (@Nome, @Sobrenome, @DataNascimento, @Email, @Sexo, @Telefone, @Cpf, @Cidade, @Estado, @DataCadastro, @DataAtualizacao, @Ativo);";
+            const string query = @"INSERT INTO Pessoas (Nome, Sobrenome, DataNascimento, Email, Sexo, Telefone, Cpf, Cidade, Estado) OUTPUT INSERTED.Id
+                         VALUES (@Nome, @Sobrenome, @DataNascimento, @Email, @Sexo, @Telefone, @Cpf, @Cidade, @Estado);";
 
             try
             {
@@ -134,7 +134,7 @@ namespace Netrin.Infraestructure.Repositories
 
                 transacao.Commit();
 
-                return new ResponseBase<ListarPessoasDto>(sucesso: true, mensagem: "Pessoa cadastrada com sucesso.", dados: pessoas.FirstOrDefault());
+                return new ResponseBase<ListarPessoasDto>(sucesso: true, mensagem: "Pessoa cadastrada com sucesso.", dados: pessoas.FirstOrDefault()!);
             }
             catch (SqlException ex)
             {
@@ -153,9 +153,8 @@ namespace Netrin.Infraestructure.Repositories
             try
             {
                 // Query para atualizar Pessoa:
-                const string query = @"UPDATE Pessoas SET Nome = @Nome, Sobrenome = @Sobrenome, DataNascimento = @DataNascimento, Email = @Email, Sexo = @Sexo, Telefone = @Telefone, 
-                     Cpf = @Cpf, Cidade = @Cidade, Estado = @Estado, DataCadastro = @DataCadastro, DataAtualizacao = @DataAtualizacao, Ativo = @Ativo WHERE Id = @Id; SELECT * FROM Pessoas 
-                     WHERE Id = @Id;";
+                const string query = @"UPDATE Pessoas SET Nome = @Nome, Sobrenome = @Sobrenome, DataNascimento = @DataNascimento, Email = @Email, Telefone = @Telefone, 
+                           Cidade = @Cidade, Estado = @Estado WHERE Id = @Id; SELECT * FROM Pessoas WHERE Id = @Id;";
 
                 // Abre conexão com o banco de dados:
                 using var conexao = _dbContext.CriarConexao(); 

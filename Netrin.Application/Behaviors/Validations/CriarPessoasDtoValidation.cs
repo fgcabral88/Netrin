@@ -27,14 +27,6 @@ namespace Netrin.Application.Behaviors.Validations
                 .Matches(@"^[a-zA-Z0-9\s]+$")
                 .WithMessage("O Sobrenome contém caracteres inválidos.");
 
-            //RuleFor(x => x.DataNascimento)
-            //    .NotNull()
-            //    .WithMessage("O nome é obrigatório.")
-            //    .NotEmpty()
-            //    .WithMessage("A data de nascimento é obrigatória.")
-            //    .Must(data => data < DateOnly.FromDateTime(DateTime.Now))
-            //    .WithMessage("A data de nascimento deve ser anterior à data atual.");
-
             RuleFor(x => x.DataNascimento)
                 .NotNull()
                 .WithMessage("O nome é obrigatório.")
