@@ -13,7 +13,9 @@ namespace Netrin.Application.Behaviors.Validations
                 .NotEmpty()
                 .WithMessage("O nome é obrigatório.")
                 .Length(2, 100)
-                .WithMessage("O nome deve ter entre 2 e 100 caracteres.");
+                .WithMessage("O nome deve ter entre 2 e 100 caracteres.")
+                .Matches(@"^[a-zA-Z0-9\s]+$")
+                .WithMessage("O nome contém caracteres inválidos.");
 
             RuleFor(x => x.Sobrenome)
                 .NotNull()
@@ -21,7 +23,9 @@ namespace Netrin.Application.Behaviors.Validations
                 .NotEmpty()
                 .WithMessage("O sobrenome é obrigatório.")
                 .Length(2, 100)
-                .WithMessage("O sobrenome deve ter entre 2 e 100 caracteres.");
+                .WithMessage("O sobrenome deve ter entre 2 e 100 caracteres.")
+                .Matches(@"^[a-zA-Z0-9\s]+$")
+                .WithMessage("O Sobrenome contém caracteres inválidos.");
 
             //RuleFor(x => x.DataNascimento)
             //    .NotNull()
