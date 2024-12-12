@@ -239,7 +239,7 @@ public class PessoasControllerTests
             Estado = "PR"
         };
 
-        var pessoaResposta = new ResponseBase<ListarPessoasDto>(false, "Pessoa não encontrada", null!);
+        var pessoaResposta = new ResponseBase<ListarPessoasDto>(false, "Pessoa não encontrada", null);
 
         _mockPessoasService.Setup(service => service.EditarPessoaAsync(editarPessoaDto)).ReturnsAsync(pessoaResposta);
 
@@ -260,7 +260,7 @@ public class PessoasControllerTests
         var pessoaId = Guid.NewGuid();
 
         //Cria uma resposta simulada do serviço indicando sucesso na operação
-        var pessoaResposta = new ResponseBase<ListarPessoasDto>(true, "Pessoa deletada com sucesso", null!);
+        var pessoaResposta = new ResponseBase<ListarPessoasDto>(true, "Pessoa deletada com sucesso", null);
 
         //Configura o mock do serviço para retornar a resposta simulada quando chamado com o ID fornecido
         _mockPessoasService.Setup(service => service.DeletarPessoaAsync(pessoaId)).ReturnsAsync(pessoaResposta);
