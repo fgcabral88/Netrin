@@ -92,8 +92,8 @@ namespace Netrin.Infraestructure.Repositories
             criarPessoaDto.Estado = criarPessoaDto.Estado!.ToUpperInvariant();
 
             // Cadastra a Pessoa no banco de dados:
-            const string query = @"INSERT INTO Pessoas (Nome, Sobrenome, DataNascimento, Email, Sexo, Telefone, Cpf, Cidade, Estado, DataCadastro, DataAtualizacao, Ativo) OUTPUT INSERTED.Id
-            VALUES (@Nome, @Sobrenome, @DataNascimento, @Email, @Sexo, @Telefone, @Cpf, @Cidade, @Estado, @DataCadastro, @DataAtualizacao, @Ativo);";
+            const string query = @"INSERT INTO Pessoas (Nome, Sobrenome, DataNascimento, Email, Sexo, Telefone, Cpf, Cidade, Estado) OUTPUT INSERTED.Id
+                         VALUES (@Nome, @Sobrenome, @DataNascimento, @Email, @Sexo, @Telefone, @Cpf, @Cidade, @Estado);";
 
             try
             {
@@ -134,7 +134,7 @@ namespace Netrin.Infraestructure.Repositories
 
                 transacao.Commit();
 
-                return new ResponseBase<ListarPessoasDto>(sucesso: true, mensagem: "Pessoa cadastrada com sucesso.", dados: pessoas.FirstOrDefault());
+                return new ResponseBase<ListarPessoasDto>(sucesso: true, mensagem: "Pessoa cadastrada com sucesso.", dados: pessoas.FirstOrDefault()!);
             }
             catch (SqlException ex)
             {
