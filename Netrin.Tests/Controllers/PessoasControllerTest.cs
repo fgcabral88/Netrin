@@ -251,11 +251,27 @@ public class PessoasControllerTests
         Assert.Equal("Pessoa não encontrada", notFoundResult.Value);
     }
 
-    //[Fact]
-    //public async Task DeletarPessoas_DeveRetornarOk_QuandoServicoRetornarSucesso()
-    //{
+    [Fact]
+    public async Task DeletarPessoas_DeveRetornarOk_QuandoServicoRetornarSucesso()
+    {
+        // Arrange
+        var pessoaId = Guid.NewGuid();
+        var pessoaResposta = new ResponseBase<ListarPessoasDto>(true, "Pessoa deletada com sucesso", null);
 
-    //}
+        _mockPessoasService.Setup(service => service.DeletarPessoaAsync(pessoaId)).ReturnsAsync(pessoaResposta);
+
+        // Act
+        var result = await _controller.DeletarPessoas(pessoaId);
+
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result);
+
+        Assert.NotNull(okResult.Value);
+
+        var response = Assert.IsType<ResponseBase<ListarPessoasDto>>(okResult.Value);
+        Assert.True(response.Sucesso);
+        Assert.Equal("Pessoa deletada com sucesso", response.Mensagem);
+    }
 
     [Fact]
     public async Task DeletarPessoas_DeveRetornarBadRequest_QuandoIdEstiverVazio()
@@ -265,7 +281,7 @@ public class PessoasControllerTests
         //Chama o método 'DeletarPessoas' passando um GUID vazio como parâmetro.
         var resultado = await _controller.DeletarPessoas(Guid.Empty);
 
-        // Assert
+        //Assert
         
         //Verifica se o resultado retornado é do tipo 'BadRequestObjectResult'.
         var resultadoBadRequest = Assert.IsType<BadRequestObjectResult>(resultado);
