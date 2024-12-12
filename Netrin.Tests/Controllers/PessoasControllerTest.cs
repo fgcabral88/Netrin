@@ -163,10 +163,99 @@ public class PessoasControllerTests
     }
 
     [Fact]
-    public async Task DeletarPessoas_DeveRetornarOk_QuandoServicoRetornarSucesso()
+    public async Task EditarPessoas_Sucesso_DeveRetornarOk()
     {
+        // Arrange
 
+        //Criação de um objeto de entrada com dados válidos
+        var editarPessoaDto = new EditarPessoasDto()
+        {
+            Id = Guid.NewGuid(),
+            Nome = "Nome teste",
+            Sobrenome = "Sobrenome Teste",
+            DataNascimento = DateTime.Now,
+            Email = "email.teste@example.com",
+            Telefone = "41999999999",
+            Cidade = "Curitiba",
+            Estado = "PR"
+        };
+
+        //Criação de uma instância de resposta simulada do serviço
+        var listarPessoasDto = new ListarPessoasDto
+        {
+            Id = Guid.NewGuid(),
+            Nome = "Nome teste",
+            Sobrenome = "Sobrenome Teste",
+            DataNascimento = DateTime.Now,
+            Email = "email.teste@example.com",
+            Telefone = "41999999999",
+            Cidade = "Curitiba",
+            Estado = "PR"
+        };
+
+        //Configuração do mock para retornar a resposta esperada
+        var pessoaResposta = new ResponseBase<ListarPessoasDto>(true, "Pessoa editada com sucesso", listarPessoasDto);
+
+        _mockPessoasService.Setup(service => service.EditarPessoaAsync(editarPessoaDto)).ReturnsAsync(pessoaResposta);
+
+        // Act
+
+        //Executa a ação da controller com os dados de entrada
+        var resultado = await _controller.EditarPessoas(editarPessoaDto);
+
+        // Assert
+
+        //Verifica se o resultado é do tipo esperado e contém os dados corretos
+        var resultadoOk = Assert.IsType<OkObjectResult>(resultado);
+
+        //Verifica se o valor não é nulo
+        Assert.NotNull(resultadoOk.Value);
+
+        //Confirma que o valor retornado é do tipo ResponseBase com os dados esperados
+        var resposta = Assert.IsType<ResponseBase<ListarPessoasDto>>(resultadoOk.Value);
+
+        //Verifica se os dados retornados não são nulos
+        Assert.NotNull(resposta.Dados);
+        
+        //Confirma o tipo do objeto nos dados retornados
+        Assert.IsType<ListarPessoasDto>(resposta.Dados);
     }
+
+    [Fact]
+    public async Task EditarPessoas_NaoEncontrada_DeveRetornarNotFound()
+    {
+        // Arrange
+
+        //Criação de um objeto de entrada com dados válidos
+        var editarPessoaDto = new EditarPessoasDto()
+        {
+            Id = Guid.NewGuid(),
+            Nome = "Nome teste",
+            Sobrenome = "Sobrenome Teste",
+            DataNascimento = DateTime.Now,
+            Email = "email.teste@example.com",
+            Telefone = "41999999999",
+            Cidade = "Curitiba",
+            Estado = "PR"
+        };
+
+        var pessoaResposta = new ResponseBase<ListarPessoasDto>(false, "Pessoa não encontrada", null!);
+
+        _mockPessoasService.Setup(service => service.EditarPessoaAsync(editarPessoaDto)).ReturnsAsync(pessoaResposta);
+
+        // Act
+        var result = await _controller.EditarPessoas(editarPessoaDto);
+
+        // Assert
+        var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+        Assert.Equal("Pessoa não encontrada", notFoundResult.Value);
+    }
+
+    //[Fact]
+    //public async Task DeletarPessoas_DeveRetornarOk_QuandoServicoRetornarSucesso()
+    //{
+
+    //}
 
     [Fact]
     public async Task DeletarPessoas_DeveRetornarBadRequest_QuandoIdEstiverVazio()
