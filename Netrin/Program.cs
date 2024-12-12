@@ -89,15 +89,18 @@ builder.Services.AddScoped<SqlDbContext>(sp =>
     new SqlDbContext(builder.Configuration.GetConnectionString("SqlServer")!));
 
 // Registrando o Serilog
-builder.Host.UseSerilog();
-Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration) // Lê as configurações do appsettings.json
-    .Enrich.FromLogContext() // Adiciona informações de contexto
-    .WriteTo.Console() // Exibe no console
-    .WriteTo.MongoDB(
-        databaseUrl: builder.Configuration.GetConnectionString("MongoDB")!,
-        collectionName: "Logs") // Salva no MongoDB
-    .CreateLogger();
+builder.Host.UseSerilog((context, loggerConfiguration) =>
+{
+    loggerConfiguration
+        .ReadFrom.Configuration(context.Configuration)
+        .Enrich.FromLogContext()
+        .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {Message:lj}{NewLine}{Exception}")
+        .WriteTo.MongoDB(
+            databaseUrl: context.Configuration.GetConnectionString("MongoDB")!,
+            collectionName: "Logs"
+        )
+        .Filter.ByExcluding(logEvent => logEvent.MessageTemplate.Text.Contains("Ação concluída")); 
+});
 
 var app = builder.Build();
 
@@ -109,16 +112,22 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseAuthentication();
+
 app.UseAuthorization();
+
 app.UseMiddleware<RateLimitingMiddleware>(3, TimeSpan.FromMinutes(1)); 
+
 app.UseReDoc(options =>
 {
     options.DocumentTitle = "Netrin - Redoc";
     options.SpecUrl = "/swagger/v1/swagger.json";
     options.RoutePrefix = "redoc";
 });
+
 app.UseHttpsRedirection();
+
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();
