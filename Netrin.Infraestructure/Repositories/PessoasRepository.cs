@@ -153,9 +153,8 @@ namespace Netrin.Infraestructure.Repositories
             try
             {
                 // Query para atualizar Pessoa:
-                const string query = @"UPDATE Pessoas SET Nome = @Nome, Sobrenome = @Sobrenome, DataNascimento = @DataNascimento, Email = @Email, Sexo = @Sexo, Telefone = @Telefone, 
-                     Cpf = @Cpf, Cidade = @Cidade, Estado = @Estado, DataCadastro = @DataCadastro, DataAtualizacao = @DataAtualizacao, Ativo = @Ativo WHERE Id = @Id; SELECT * FROM Pessoas 
-                     WHERE Id = @Id;";
+                const string query = @"UPDATE Pessoas SET Nome = @Nome, Sobrenome = @Sobrenome, DataNascimento = @DataNascimento, Email = @Email, Telefone = @Telefone, 
+                           Cidade = @Cidade, Estado = @Estado WHERE Id = @Id; SELECT * FROM Pessoas WHERE Id = @Id;";
 
                 // Abre conexão com o banco de dados:
                 using var conexao = _dbContext.CriarConexao(); 

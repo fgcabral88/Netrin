@@ -7,7 +7,6 @@ namespace Netrin.Application.Dtos
     {
         [JsonPropertyOrder(1)]
         [JsonPropertyName("Id")]
-        [Required(ErrorMessage = "O Id é obrigatório.")]
         public Guid Id { get; set; }
     }
 }
