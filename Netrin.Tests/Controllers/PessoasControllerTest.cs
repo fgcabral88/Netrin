@@ -254,22 +254,37 @@ public class PessoasControllerTests
     [Fact]
     public async Task DeletarPessoas_DeveRetornarOk_QuandoServicoRetornarSucesso()
     {
-        // Arrange
-        var pessoaId = Guid.NewGuid();
-        var pessoaResposta = new ResponseBase<ListarPessoasDto>(true, "Pessoa deletada com sucesso", null);
+        //Arrange
 
+        //Cria um Id de pessoa válido para simular a exclusão.
+        var pessoaId = Guid.NewGuid();
+
+        //Cria uma resposta simulada do serviço indicando sucesso na operação
+        var pessoaResposta = new ResponseBase<ListarPessoasDto>(true, "Pessoa deletada com sucesso", null!);
+
+        //Configura o mock do serviço para retornar a resposta simulada quando chamado com o ID fornecido
         _mockPessoasService.Setup(service => service.DeletarPessoaAsync(pessoaId)).ReturnsAsync(pessoaResposta);
 
-        // Act
-        var result = await _controller.DeletarPessoas(pessoaId);
+        //Act
+
+        //Executa o método da controller que está sendo testado
+        var resultado = await _controller.DeletarPessoas(pessoaId);
 
         // Assert
-        var okResult = Assert.IsType<OkObjectResult>(result);
 
-        Assert.NotNull(okResult.Value);
+        //Garante que o resultado é do tipo OkObjectResult
+        var resultadoOk = Assert.IsType<OkObjectResult>(resultado);
 
-        var response = Assert.IsType<ResponseBase<ListarPessoasDto>>(okResult.Value);
+        //Verifica que o valor do resultado não é nulo
+        Assert.NotNull(resultadoOk.Value);
+
+        //Confirma que o valor retornado é do tipo esperado (ResponseBase com ListarPessoasDto)
+        var response = Assert.IsType<ResponseBase<ListarPessoasDto>>(resultadoOk.Value);
+
+        //Verifica que a operação foi bem-sucedida
         Assert.True(response.Sucesso);
+
+        //Confirma que a mensagem de sucesso corresponde à esperada
         Assert.Equal("Pessoa deletada com sucesso", response.Mensagem);
     }
 
