@@ -115,7 +115,7 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-app.UseMiddleware<RateLimitingMiddleware>(3, TimeSpan.FromMinutes(1)); 
+app.UseMiddleware<RateLimitingMiddleware>(10, TimeSpan.FromMinutes(1)); 
 
 app.UseReDoc(options =>
 {

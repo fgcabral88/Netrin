@@ -44,15 +44,7 @@ namespace Netrin.Api.Presentation.Controllers
                 return BadRequest(pessoasResponse.Mensagem);
             }
 
-            var resultado = new 
-            { 
-                dados = pessoasResponse.Dados, 
-                contagemTotal = pessoasResponse.ContagemTotal, 
-                sucesso = pessoasResponse.Sucesso, 
-                mensagem = pessoasResponse.Mensagem 
-            };
-
-            return Ok(resultado);
+            return Ok(pessoasResponse);
         }
 
         /// <summary>
@@ -83,7 +75,7 @@ namespace Netrin.Api.Presentation.Controllers
                 return BadRequest(pessoaIdresponse.Mensagem);
             }
 
-            return Ok(pessoaIdresponse.Dados);
+            return Ok(pessoaIdresponse);
         }
 
         /// <summary>
